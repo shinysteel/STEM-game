@@ -1,0 +1,348 @@
+fileFormatVersion: 2
+guid: 1ea720b568e3fff4aac48bc66d96cf99
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3119204386622312410
+    second: giant_squid_swim2
+  - first:
+      213: -182210012535030437
+    second: giant_squid_swim1
+  - first:
+      213: 5845670649930315935
+    second: purple_fish
+  - first:
+      213: 2720783949766375431
+    second: blue_fish
+  - first:
+      213: 6990485913762956251
+    second: crab_idle
+  - first:
+      213: -1256465988986514164
+    second: crab_attack
+  - first:
+      213: -3934295621664827281
+    second: orange_coral_idle1
+  - first:
+      213: -7224401866902720380
+    second: yellow_coral_idle1
+  - first:
+      213: 6871652110819452684
+    second: orange_coral_idle2
+  - first:
+      213: 6419212742003470150
+    second: yellow_coral_idle2
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: giant_squid_swim2
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 298
+        width: 90
+        height: 162
+      alignment: 9
+      pivot: {x: 0.45742333, y: 0.2769813}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6207989f22c56b4d0800000000000000
+      internalID: -3119204386622312410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: giant_squid_swim1
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 213
+        width: 86
+        height: 243
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5d745085f8a87df0800000000000000
+      internalID: -182210012535030437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: purple_fish
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 382
+        width: 40
+        height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f98f5030c7eff1150800000000000000
+      internalID: 5845670649930315935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue_fish
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 388
+        width: 38
+        height: 60
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 708b864469a22c520800000000000000
+      internalID: 2720783949766375431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_idle
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 382
+        width: 112
+        height: 84
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd38631c6e1330160800000000000000
+      internalID: 6990485913762956251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crab_attack
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 379
+        width: 103
+        height: 98
+      alignment: 9
+      pivot: {x: 0.55319184, y: 0.45052415}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c05591e07d2209ee0800000000000000
+      internalID: -1256465988986514164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orange_coral_idle1
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 221
+        width: 116
+        height: 113
+      alignment: 9
+      pivot: {x: 0.29708073, y: 0.43217942}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f681b451af29669c0800000000000000
+      internalID: -3934295621664827281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow_coral_idle1
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 219
+        width: 138
+        height: 121
+      alignment: 9
+      pivot: {x: 0.42066535, y: 0.46380767}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 480389057c4cdbb90800000000000000
+      internalID: -7224401866902720380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orange_coral_idle2
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 85
+        width: 119
+        height: 110
+      alignment: 9
+      pivot: {x: 0.36425424, y: 0.45411128}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c07e47def230d5f50800000000000000
+      internalID: 6871652110819452684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow_coral_idle2
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 87
+        width: 133
+        height: 96
+      alignment: 9
+      pivot: {x: 0.4600252, y: 0.6387294}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64f27c87aff951950800000000000000
+      internalID: 6419212742003470150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
