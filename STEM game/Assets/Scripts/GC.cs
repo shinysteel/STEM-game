@@ -28,14 +28,15 @@ public class GC : MonoBehaviour
             "sprite:crab_attack", "sprite:crab_idle", "sprite:giant_squid_swim1",
             "sprite:giant_squid_swim2", "sprite:orange_coral_idle1", "sprite:orange_coral_idle2",
             "sprite:purple_fish", "sprite:yellow_coral_idle1", "sprite:yellow_coral_idle2");
-        AddItemToReferenceHash("item:fish_research_paper", "Fish Research Paper", 2f, 3, Get<Sprite>("sprite:fish_research_paper"));
-        AddItemToReferenceHash("item:coral_research_paper", "Coral Research Paper", 4.5f, 2, Get<Sprite>("sprite:coral_research_paper"));
-        AddItemToReferenceHash("item:squid_research_paper", "Squid Research Paper", 50f, 1, Get<Sprite>("sprite:squid_research_paper"));
-        referenceHash.Add("creature:blue_fish", new Fish(Get<Sprite>("sprite:blue_fish"), 0.05f, "item:fish_research_paper", -1));
-        referenceHash.Add("creature:purple_fish", new Fish(Get<Sprite>("sprite:purple_fish"), 0.075f, "item:fish_research_paper", -1));
-        referenceHash.Add("creature:giant_squid", new Fish(Get<Sprite>("sprite:giant_squid_swim1"), 0.085f, "item:squid_research_paper", -1));
-        referenceHash.Add("creature:orange_coral", new Coral(new Sprite[] { Get<Sprite>("sprite:orange_coral_idle1"), Get<Sprite>("sprite:orange_coral_idle2") }, "item:coral_research_paper", -1));
-        referenceHash.Add("creature:yellow_coral", new Coral(new Sprite[] { Get<Sprite>("sprite:yellow_coral_idle1"), Get<Sprite>("sprite:yellow_coral_idle2") }, "item:coral_research_paper", -1));
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/icons1"), "sprite:dollar_icon", "sprite:gear_icon");
+        AddItemToReferenceHash("item:fish_research_paper", "Fish Research Paper", 2f, 3, "sprite:fish_research_paper");
+        AddItemToReferenceHash("item:coral_research_paper", "Coral Research Paper", 4.5f, 2, "sprite:coral_research_paper");
+        AddItemToReferenceHash("item:squid_research_paper", "Squid Research Paper", 50f, 1, "sprite:squid_research_paper");
+        referenceHash.Add("creature:blue_fish", new Fish("sprite:blue_fish", 0.05f, "Blue Fish", null, "item:fish_research_paper", null, -1, "creature:blue_fish"));
+        referenceHash.Add("creature:purple_fish", new Fish("sprite:purple_fish", 0.075f, "Purple Fish", null, "item:fish_research_paper", null, -1, "creature:purple_fish"));
+        referenceHash.Add("creature:giant_squid", new Fish("sprite:giant_squid_swim1", 0.085f, "Giant Squid", "OMG! It's a Giant Squid!", "item:squid_research_paper", null, -1, "creature:giant_squid"));
+        referenceHash.Add("creature:orange_coral", new Coral(new string[] { "sprite:orange_coral_idle1", "sprite:orange_coral_idle2" }, "Orange Coral", null, "item:coral_research_paper", null, -1, "creature:orange_coral"));
+        referenceHash.Add("creature:yellow_coral", new Coral(new string[] { "sprite:yellow_coral_idle1", "sprite:yellow_coral_idle2" }, "Yellow Coral", null, "item:coral_research_paper", null, -1, "creature:yelow_coral"));
 
         instanceHash = new Hashtable();
         instanceParent = new GameObject("Instances").transform;
@@ -43,26 +44,50 @@ public class GC : MonoBehaviour
         CanvasT = _CanvasT;
         for (int i = 0; i < 5; i++)
         {
-            CreateInstance("creature:blue_fish", -6f, -3f);
-            CreateInstance("creature:purple_fish", -7f, -3.5f);
+            CreateInstance("creature:blue_fish", -10f, -15f);
+            CreateInstance("creature:purple_fish", -10f, -15f);
         }
-        CreateInstance("creature:giant_squid", -3f, -1.5f);
-        CreateInstance("creature:orange_coral", -1f, -4.1f);
-        CreateInstance("creature:yellow_coral", -3.9f, -4.1f);
+        CreateInstance("creature:giant_squid", 10f, -102f);
+        CreateInstance("creature:orange_coral", -14.6f, -25.9f);
+        CreateInstance("creature:yellow_coral", -16.7f, -25.5f);
     }
 
-    public static int GetNewInstanceID() { return instanceIDCounter++; }
-    public static T Get<T>(string id) { return ((T)referenceHash[id]); }
-    public static GameObject GetInstanceByID(int id) { return (GameObject)instanceHash[id]; }
-    public static void CreateInstance(string id, float x, float y) { Get<InstanceBase>(id).DeepClone(x, y); }
-    public static void CreatePrefab<T>(string prefabID, InstanceBase classReference, float x, float y) where T : IClassSetable
+    public static int GetNewInstanceID()
     {
-        GameObject prefab = Instantiate(Get<GameObject>(prefabID), new Vector3(x, y), Quaternion.identity, instanceParent);
-        prefab.GetComponent<T>().SetClass(classReference);
-        instanceHash.Add(classReference.InstanceID, prefab);
+        return instanceIDCounter++;
     }
-
-    private static void AddItemToReferenceHash(string key, string name, float currencyValue, int maxStack, Sprite sprite) { referenceHash.Add(key, new Item(key, name, currencyValue, maxStack, sprite)); }
+    public static T GetReference<T>(string id)
+    {
+        if (id == null) return default(T);
+        return ((T)referenceHash[id]);
+    }
+    public static GameObject GetInstanceByID(int id)
+    {
+        return (GameObject)instanceHash[id];
+    }
+    public static bool TryGetDeepClone<T>(string id, float x, float y, out T output) where T : ReferenceBase
+    {
+        output = default(T);
+        T reference = GetReference<T>(id);
+        if (reference != null) output = (T)reference.DeepClone(x, y); 
+        return output != default(T);
+    }
+    public static void CreateInstance(string id, float x, float y)
+    {
+        if (TryGetDeepClone<InstanceBase>(id, x, y, out InstanceBase output)) instanceHash.Add(output.InstanceID, output.GO);
+    }
+    public static GameObject CreatePrefab(string prefabID, float x, float y)
+    {
+        return Instantiate(GetReference<GameObject>(prefabID), new Vector3(x, y), Quaternion.identity, instanceParent);
+    }
+    public static void InitBehaviour<T>(GameObject go, InstanceBase classReference) where T : IClassSetable
+    {
+        go.GetComponent<T>().SetClass(classReference);
+    }
+    private static void AddItemToReferenceHash(string key, string name, float currencyValue, int maxStack, string spriteID)
+    {
+        referenceHash.Add(key, new InventoryItem(key, name, currencyValue, maxStack, spriteID));
+    }
     private static void AddSpriteSheetToReferenceHash(Sprite[] spriteSheet, params string[] keys)
     {
         for (int i = 0; i < keys.Length; i++) { referenceHash.Add(keys[i], spriteSheet[i]); }
@@ -74,7 +99,7 @@ public class GC : MonoBehaviour
             int startNum; if (!int.TryParse(id[id.Length - 1].ToString(), out startNum)) { return; }
             id = id.Substring(0, id.Length - 1) + Random.Range(startNum, startNum + variation + 1);
         }
-        AudioClip clip = Get<AudioClip>(id);
+        AudioClip clip = GetReference<AudioClip>(id);
         if (clip == null) { return; }
 
         GameObject GO = new GameObject(id);
@@ -82,8 +107,22 @@ public class GC : MonoBehaviour
         AS.clip = clip; AS.volume = volume; AS.pitch = pitch; AS.Play();
         Destroy(GO, clip.length);
     }
-    public static float ApproachValue(float currentValue, float targetValue, float rate) { return (currentValue + rate * (targetValue - currentValue)); }
-
+    public static float ApproachValue(float currentValue, float targetValue, float rate)
+    {
+        return (currentValue + rate * (targetValue - currentValue));
+    }
+    public static Vector3 GetWorldMousePos()
+    {
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+    public static void GetVelocityToMouse(Vector3 castPos, float force, out float velocityX, out float velocityY)
+    {
+        Vector3 mousePos = GetWorldMousePos();
+        Vector3 dir = (mousePos - castPos).normalized;
+        float radians = Mathf.Atan2(dir.y, dir.x);
+        velocityX = Mathf.Cos(radians) * force;
+        velocityY = Mathf.Sin(radians) * force;
+    }
     private static GameObject BuildUI(string name, Vector2 pos, Vector2 scale, Vector2 sizeDelta)
     {
         GameObject output = new GameObject(name); output.transform.parent = CanvasT;
@@ -91,16 +130,19 @@ public class GC : MonoBehaviour
         output.transform.localPosition = pos; output.transform.localScale = scale; RT.sizeDelta = sizeDelta;
         return (output);
     }
-    public static Image BuildUIImage(string name, Vector2 pos, Vector2 sizeDelta, string spriteID, Color color)
+    public static Image BuildUIImage(string name, Vector2 pos, Vector2 sizeDelta, string spriteID, Color color, bool isCutout = false)
     {
         GameObject ui = BuildUI(name, pos, Vector2.one, sizeDelta);
-        Image I = ui.AddComponent<Image>(); I.sprite = Get<Sprite>(spriteID); I.color = color; I.type = Image.Type.Sliced;
+        Image I;
+        if (isCutout) I = ui.AddComponent<CutoutMaskUI>();
+        else I = ui.AddComponent<Image>();
+        I.sprite = GetReference<Sprite>(spriteID); I.color = color; I.type = Image.Type.Sliced;
         return (I);
     }
     public static Text BuildUIText(string name, Vector2 pos, Vector2 sizeDelta, string text, int fontSize, TextAnchor alignment, string fontID, FontStyle fontStyle, Color color, int resolution)
     {
         GameObject ui = BuildUI(name, pos, Vector2.one / resolution, sizeDelta * resolution);
-        Text T = ui.AddComponent<Text>(); T.text = text; T.fontSize = fontSize * resolution; T.alignment = alignment; T.font = Get<Font>(fontID); T.fontStyle = fontStyle; T.color = color;
+        Text T = ui.AddComponent<Text>(); T.text = text; T.fontSize = fontSize * resolution; T.alignment = alignment; T.font = GetReference<Font>(fontID); T.fontStyle = fontStyle; T.color = color;
         return (T);
     }
     //public static void BuildUISlider

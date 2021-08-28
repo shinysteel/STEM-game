@@ -6,11 +6,11 @@ public class Player : MonoBehaviour
 {
     private const int CAMERA_Z_DISTANCE = -5;
     [Header("Gameobject References")]
-    [SerializeField] private Transform visualT;
+    public Transform visualT;
     [SerializeField] private GameObject scannerGO;
 
-    private const float TOP_OF_MAP = 7.5f;
-    private const float PITCH_BLACK_DEPTH = -42.5f;
+    public const float TOP_OF_MAP = -8.5f;
+    public const float PITCH_BLACK_DEPTH = -190f;
 
     [Header("Dive Data")]
     public float time;
@@ -18,48 +18,50 @@ public class Player : MonoBehaviour
     public float weight;
     public float temperature;
     public float darkness;
+    public float balance;
 
-    private Inventory inventory;
-
-    public PlayerMovement playerMovement;
+    private IPlayerMoveable playerMovement;
     public PlayerUI playerUI;
     public PlayerScanner playerScanner;
     private void Awake()
     {
-        Physics2D.gravity = new Vector2(0f, 0f);
-        playerMovement = GetComponent<PlayerMovement>(); playerMovement.player = this;
         playerUI = GetComponent<PlayerUI>(); playerUI.player = this;
         playerScanner = scannerGO.GetComponent<PlayerScanner>(); playerScanner.player = this;
     }
     private void Start()
     {
-        inventory = new Inventory(4);
-        inventory.AddItems(GC.Get<Item>("item:fish_research_paper"), 7);
-        inventory.AddItems(GC.Get<Item>("item:coral_research_paper"), 12);
-        inventory.RemoveItems(1, 25);
+        PlayerMovementSwimming playerMovementSwimming = gameObject.AddComponent<PlayerMovementSwimming>();
+        playerMovementSwimming.player = this;
+        playerMovement = playerMovementSwimming;
     }
 
     private void LateUpdate() { Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, CAMERA_Z_DISTANCE); }
     private void Update()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        visualT.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+        playerMovement = playerMovement.UpdateMovementType();
 
         if (Input.GetKeyDown("e")) { playerScanner.TryNewScannerState(true); }
         if (Input.GetKeyUp("e")) { playerScanner.TryNewScannerState(false); }
-        if (!Input.GetKey("e") && Input.GetMouseButton(0)) { playerMovement.Move(); }
+        playerMovement.Move();
 
         // time
         depth = Mathf.Abs(Mathf.Clamp(Mathf.RoundToInt((transform.position.y - TOP_OF_MAP)), -999, 0));
         // weight
         // temperature
         darkness = (transform.position.y - TOP_OF_MAP) / (PITCH_BLACK_DEPTH - TOP_OF_MAP);
+        // balance
 
         // time
         playerUI.SetDepth(depth);
         // weight
         // temperature
         playerUI.SetDarkness(darkness);
+        playerUI.SetBalance(balance);
+    }
+
+    public void AddBalance(float amount)
+    {
+        balance += amount;
     }
 }
 

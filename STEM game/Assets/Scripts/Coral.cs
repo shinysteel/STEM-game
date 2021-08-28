@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Coral : CreatureBase
 {
-    private Sprite[] idleSprites; public Sprite[] IdleSprites { get { return idleSprites; } }
-    public Coral(Sprite[] _IdleSprites, string _ResearchItemID, int _InstanceID) : base(_ResearchItemID, _InstanceID)
+    private string[] idleSpritesIDs; public string[] IdleSpritesIDs { get { return idleSpritesIDs; } }
+    public Coral(string[] _IdleSpritesIDs, string _Name, string _Description, string _ResearchItemID, GameObject _GO, int _InstanceID, string _ReferenceID) : base(_Name, _Description, _ResearchItemID, _GO, _InstanceID, _ReferenceID)
     {
-        idleSprites = _IdleSprites;
+        idleSpritesIDs = _IdleSpritesIDs;
     }
     public override object DeepClone(float x, float y)
     {
-        Coral coral = new Coral(idleSprites, ResearchItemID, GC.GetNewInstanceID());
-        GC.CreatePrefab<CoralBehaviour>("prefab:coral", coral, x, y);
+        Coral coral = new Coral(IdleSpritesIDs, Name, Description, ResearchItemID, GC.CreatePrefab("prefab:coral", x, y), GC.GetNewInstanceID(), ReferenceID);
+        GC.InitBehaviour<CoralBehaviour>(coral.GO, coral);
         return coral;
     }
 }

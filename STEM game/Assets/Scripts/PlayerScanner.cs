@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using ShinyOwl.Utils;
+
 public class PlayerScanner : MonoBehaviour
 {
     public Player player;
@@ -12,6 +14,7 @@ public class PlayerScanner : MonoBehaviour
     [SerializeField] private GameObject researchUIGO;
     [SerializeField] private Transform researchBarT;
     [SerializeField] private SpriteRenderer scannedCreatureIcon;
+    [SerializeField] private Transform scannedCreatureT;
     [SerializeField] private float researchTimer;
     [SerializeField] private float timeToResearch = 1.5f;
 
@@ -25,12 +28,30 @@ public class PlayerScanner : MonoBehaviour
                 TryNewScannerState(false);
             }
         }   
-        if (isScanning) { researchTimer += Time.deltaTime; }
+        if (isScanning)
+        {
+            if (scannedCreatureT != null) Debug.DrawLine(player.transform.position, scannedCreatureT.position, Color.red);
+            researchTimer += Time.deltaTime;
+        }
         float researchRatio = Mathf.Clamp((researchTimer / timeToResearch), 0f, 1f);
         researchBarT.localScale = new Vector3(researchRatio, 1f);
         if (researchRatio >= 1f)
         {
-            player.playerUI.ObtainItems(GC.Get<Item>(GC.GetInstanceByID(targetInstanceID).GetComponent<CreatureBehaviour>().GetResearchItemID()), 1);
+            if (player.playerUI.playerInventory.IsFull())
+            {
+                UtilsClass.CreateWorldTextPopup("Inventory is full!", player.transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.red);
+                TryNewScannerState(false);
+                return;
+            }
+
+            CreatureBehaviour behaviour = scannedCreatureT.GetComponent<CreatureBehaviour>();
+            CreatureBase creature = behaviour.Creature;
+            if (creature.TryDeclareResearched())
+            {
+                player.playerUI.ObtainItems(GC.GetReference<InventoryItem>(creature.ResearchItemID), 1);
+                scannedInstances.Remove(creature.InstanceID);
+                player.playerUI.SetAnalysis(creature.Name, creature.Description, behaviour.GetSpriteIcon());
+            }
             TryNewScannerState(false);
         }
     }
@@ -53,7 +74,8 @@ public class PlayerScanner : MonoBehaviour
                 if (dist < smallestDist) { smallestDist = dist; closestInstanceID = id; }
             }
             targetInstanceID = closestInstanceID;
-            scannedCreatureIcon.sprite = GC.GetInstanceByID(targetInstanceID).GetComponent<CreatureBehaviour>().GetSpriteIcon();
+            scannedCreatureT = GC.GetInstanceByID(targetInstanceID).transform;
+            scannedCreatureIcon.sprite = scannedCreatureT.GetComponent<CreatureBehaviour>().GetSpriteIcon();
         }
         else
         { 
@@ -62,13 +84,18 @@ public class PlayerScanner : MonoBehaviour
             targetInstanceID = -1;
         }
     }
-    public bool IsScanning() { return isScanning; }
+    public bool IsScanning()
+    {
+        return isScanning;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Creature")
         {
-            int instanceID = collision.GetComponent<CreatureBehaviour>().GetInstanceID();
+            CreatureBase creature = collision.GetComponent<CreatureBehaviour>().Creature;
+            if (creature.IsResearched) return;
+            int instanceID = creature.InstanceID;
             if (scannedInstances.Contains(instanceID) == false) { scannedInstances.Add(instanceID); }
             isScanningCreature = true;
         }
@@ -77,9 +104,9 @@ public class PlayerScanner : MonoBehaviour
     {
         if (collision.tag == "Creature")
         {
-            int instanceID = collision.GetComponent<CreatureBehaviour>().GetInstanceID();
+            CreatureBase creature = collision.GetComponent<CreatureBehaviour>().Creature;
+            int instanceID = creature.InstanceID;
             if (scannedInstances.Contains(instanceID)) { scannedInstances.Remove(instanceID); }
-
             if (scannedInstances.Count <= 0)
             {
                 isScanningCreature = false;

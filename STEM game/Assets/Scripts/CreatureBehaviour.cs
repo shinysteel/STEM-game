@@ -4,8 +4,17 @@ using UnityEngine;
 
 public abstract class CreatureBehaviour : MonoBehaviour, IClassSetable
 {
-    public abstract void SetClass(object classReference);
-    new public abstract int GetInstanceID();
-    public abstract string GetResearchItemID();
-    public virtual Sprite GetSpriteIcon() { return GetComponent<SpriteRenderer>().sprite; }
+    private CreatureBase creature; public CreatureBase Creature { get { return creature; } }
+    public virtual void SetClass(object classReference)
+    {
+        creature = (CreatureBase)classReference;
+    }
+    public virtual Sprite GetSpriteIcon()
+    {
+        return GetComponent<SpriteRenderer>().sprite;
+    }
+    new public int GetInstanceID()
+    {
+        return creature.InstanceID;
+    }
 }

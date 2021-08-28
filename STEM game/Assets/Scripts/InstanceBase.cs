@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class InstanceBase : IDeepCloneable
+public abstract class InstanceBase : ReferenceBase
 {
-    private int instanceID;
-    public int InstanceID { get { return instanceID; } }
+    private GameObject go; public GameObject GO { get { return go; } }
+    private int instanceID; public int InstanceID { get { return instanceID; } }
 
-    public InstanceBase(int _InstanceID)
+    public InstanceBase(GameObject _GO, int _InstanceID, string _ReferenceID) : base(_ReferenceID)
     {
-        this.instanceID = _InstanceID;
+        go = _GO;
+        instanceID = _InstanceID;
     }
-    public abstract object DeepClone(float x, float y);
 }

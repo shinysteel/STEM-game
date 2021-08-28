@@ -4,19 +4,30 @@ using UnityEngine;
 
 public class Inventory
 {
-    private Slot[] slots;
+    private InventorySlot[] slots;
     public Inventory (int _Size)
     {
-        slots = new Slot[_Size];
+        slots = new InventorySlot[_Size];
         for (int i = 0; i < _Size; i++)
         {
-            slots[i] = new Slot();
+            slots[i] = new InventorySlot();
         }
     }
 
     public int GetSize() { return slots.Length; }
-    public Slot GetSlot(int slotID) { return slots[slotID]; }
-    public void AddItems(Item item, int quantity)
+    public InventorySlot GetSlot(int slotID) { return slots[slotID]; }
+    public bool IsFull()
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (!slots[i].IsFull())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    public void AddItems(InventoryItem item, int quantity)
     {
         for (int i = 0; i < slots.Length; i++)
         {
@@ -46,23 +57,29 @@ public class Inventory
     public void RemoveItems(int slotID, int quantity) { slots[slotID].RemoveItems(quantity); }
 }
 
-public class Slot
+public class InventorySlot
 {
-    private Item item; public Item Item { get { return item; } }
+    private InventoryItem item; public InventoryItem Item { get { return item; } }
     private int quantity; public int Quantity { get { return quantity; } }
     public bool IsOccupied() { return item != null; }
+    public bool IsFull(bool validate = true)
+    {
+        if (validate) if (!IsOccupied()) return false;
+        return quantity >= item.MaxStack;
+    }
     public string GetContainedItemID() { if (IsOccupied()) { return item.ID; } else { return null; } }
+    public string GetContainedItemName() { if (IsOccupied()) { return item.Name; } else { return null; } }
     public int GetContainedMaxStack() { if (IsOccupied()) { return item.MaxStack; } else { return -1; } }
-    public Sprite GetContainedSprite() { if (IsOccupied()) { return item.Sprite; } else { return null; } }
+    public string GetContainedSpriteID() { if (IsOccupied()) { return item.SpriteID; } else { return null; } }
     public bool CanAddQuantity(out int quantityOfSpace)
     {
         quantityOfSpace = GetContainedMaxStack() - this.quantity;
         return this.quantity < GetContainedMaxStack();
     }
 
-    public Slot() { item = null; quantity = 0; }
+    public InventorySlot() { item = null; quantity = 0; }
 
-    public void AddItems(Item item, int quantity)
+    public void AddItems(InventoryItem item, int quantity)
     {
         if (this.item == null) { this.item = item; this.quantity = Mathf.Clamp(quantity, 0, item.MaxStack); }
         else { this.quantity = Mathf.Clamp(this.quantity + quantity, 0, GetContainedMaxStack()); }
@@ -74,21 +91,21 @@ public class Slot
     }
 }
 
-public class Item
+public class InventoryItem
 {
     private string id; public string ID { get { return id; } }
     private string name; public string Name { get { return name; } }
     private float currencyValue; public float CurrencyValue { get { return currencyValue; } }
     private int maxStack; public int MaxStack { get { return maxStack; } }
-    private Sprite sprite; public Sprite Sprite { get { return sprite; } }
+    private string spriteID; public string SpriteID { get { return spriteID; } }
 
-    public Item(string _ID, string _Name, float _CurrencyValue, int _MaxStack, Sprite _Sprite)
+    public InventoryItem(string _ID, string _Name, float _CurrencyValue, int _MaxStack, string _SpriteID)
     {
         id = _ID;
         name = _Name;
         currencyValue = _CurrencyValue;
         maxStack = _MaxStack;
-        sprite = _Sprite;
+        spriteID = _SpriteID;
     }
 }
 

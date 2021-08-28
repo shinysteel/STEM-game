@@ -5,8 +5,11 @@ using UnityEngine;
 public class FishBehaviour : CreatureBehaviour
 {
     public Fish fish;
-    public override void SetClass(object classReference) { fish = (Fish)classReference; }
-    public override int GetInstanceID() { return fish.InstanceID; }
+    public override void SetClass(object classReference)
+    {
+        base.SetClass(classReference);
+        fish = (Fish)classReference;
+    }
 
     [SerializeField] private Vector3 moveDir;
     [SerializeField] private float velocityX;
@@ -25,12 +28,11 @@ public class FishBehaviour : CreatureBehaviour
     }
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = fish.Sprite;
+        GetComponent<SpriteRenderer>().sprite = GC.GetReference<Sprite>(fish.SpriteID);
         rb.freezeRotation = true;
-        gameObject.AddComponent<BoxCollider2D>();
+        gameObject.AddComponent<CapsuleCollider2D>();
         UpdateState();
     }
-    public override string GetResearchItemID() { return fish.ResearchItemID; }
 
     private void Update()
     {
