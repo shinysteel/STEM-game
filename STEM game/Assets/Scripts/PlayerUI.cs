@@ -16,6 +16,7 @@ public class PlayerUI : MonoBehaviour
     private Text analysisTitle; private Text analysisDescription; private Image analysisDisplay;
     [SerializeField] private RectTransform lightPointer;
     [SerializeField] private RectTransform torchLight;
+    [SerializeField] private RectTransform pressurePointer;
     private Image darknessOverlay;
 
     public Inventory playerInventory;
@@ -23,28 +24,31 @@ public class PlayerUI : MonoBehaviour
 
     private void Start()
     {
-        GC.BuildUIImage("Left Panel", new Vector2(-400f, 0f), new Vector2(150, 450), "sprite:builtin:background", new Color(1f, 1f, 1f, 0.25f));
-        GC.BuildUIText("Dive Data Title", new Vector2(-363f, 210f), new Vector2(75, 25), "Dive Data", 14, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5);
-        timeText = GC.BuildUIText("Dive Data Time Text", new Vector2(-363f, 190f), new Vector2(75, 15), "Time: 1300", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        depthText = GC.BuildUIText("Dive Data Depth Text", new Vector2(-363f, 180f), new Vector2(75, 15), "Depth: 060m", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        weightText = GC.BuildUIText("Dive Data Weight Text", new Vector2(-363f, 170f), new Vector2(75, 15), "Weight: 67kg", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        temperatureText = GC.BuildUIText("Dive Data Temperature Text", new Vector2(-363f, 160f), new Vector2(75, 15), "Temperature: -24°C", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        balanceText = GC.BuildUIText("Dive Data Balance Text", new Vector2(-363f, 150f), new Vector2(75, 15), "Balance: $0", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        GC.BuildUIImage("Right Panel Top Half", new Vector2(400f, 0f), new Vector2(150, 450), "sprite:builtin:background", new Color(1f, 1f, 1f, 0.25f));
-        GC.BuildUIImage("Analysis Display Backdrop", new Vector2(363f, 187f), new Vector2(75, 75), "sprite:builtin:knob", Color.white);
-        analysisDisplay = GC.BuildUIImage("Analysis Display", new Vector2(363f, 187f), new Vector2(75, 75), null, Color.white);
-        analysisTitle = GC.BuildUIText("Analysis Display Title", new Vector2(363f, 140f), new Vector2(75, 25), "Fish Name", 14, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5);
-        analysisDescription = GC.BuildUIText("Analysis Display Description", new Vector2(363f, 63f), new Vector2(75, 130), "This is just sample text I am just filling the empty space to see what it looks like.", 8, TextAnchor.UpperLeft, "font:arial", FontStyle.Normal, Color.black, 5);
-        GC.BuildUIImage("Right Panel Bottom Half", new Vector2(400f, -113f), new Vector2(150, 225), "sprite:builtin:background", new Color(0.5f, 0.5f, 0.5f, 1f));
+        GC.BuildUIImage("Left Panel", null, new Vector2(-400f, 0f), new Vector2(150, 450), "sprite:builtin:background", new Color(1f, 1f, 1f, 0.25f));
+        GC.BuildUIText("Dive Data Title", null, new Vector2(-363f, 210f), new Vector2(75, 25), "Dive Data", 14, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5);
+        timeText = GC.BuildUIText("Dive Data Time Text", null, new Vector2(-363f, 190f), new Vector2(75, 15), "Time: 1300", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        depthText = GC.BuildUIText("Dive Data Depth Text", null, new Vector2(-363f, 180f), new Vector2(75, 15), "Depth: 060m", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        weightText = GC.BuildUIText("Dive Data Weight Text", null, new Vector2(-363f, 170f), new Vector2(75, 15), "Weight: 67kg", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        temperatureText = GC.BuildUIText("Dive Data Temperature Text", null, new Vector2(-363f, 160f), new Vector2(75, 15), "Temperature: -24°C", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        balanceText = GC.BuildUIText("Dive Data Balance Text", null, new Vector2(-363f, 150f), new Vector2(75, 15), "Balance: $0", 8, TextAnchor.MiddleLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        GC.BuildUIImage("Dive Data Pressure Wheel", null, new Vector2(-363f, 110f), new Vector2(75, 75), "sprite:builtin:knob", Color.white);
+        pressurePointer = GC.BuildUIEmpty("Dive Data Pressure Pointer Origin", null, new Vector2(-363f, 110f));
+        GC.BuildUIImage("Dive Data Pressure Pointer", pressurePointer.transform, new Vector2(0f, 15f), new Vector2(5, 30), "sprite:builtin:background", Color.black);
+        GC.BuildUIImage("Right Panel Top Half", null, new Vector2(400f, 0f), new Vector2(150, 450), "sprite:builtin:background", new Color(1f, 1f, 1f, 0.25f));
+        GC.BuildUIImage("Analysis Display Backdrop", null, new Vector2(363f, 187f), new Vector2(75, 75), "sprite:builtin:knob", Color.white);
+        analysisDisplay = GC.BuildUIImage("Analysis Display", null, new Vector2(363f, 187f), new Vector2(75, 75), null, Color.white);
+        analysisTitle = GC.BuildUIText("Analysis Display Title", null, new Vector2(363f, 140f), new Vector2(75, 25), "Fish Name", 14, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5);
+        analysisDescription = GC.BuildUIText("Analysis Display Description", null, new Vector2(363f, 63f), new Vector2(75, 130), "This is just sample text I am just filling the empty space to see what it looks like.", 8, TextAnchor.UpperLeft, "font:arial", FontStyle.Normal, Color.black, 5);
+        GC.BuildUIImage("Right Panel Bottom Half", null, new Vector2(400f, -113f), new Vector2(150, 225), "sprite:builtin:background", new Color(0.5f, 0.5f, 0.5f, 1f));
 
         int inventoryWidth = 2; int inventoryHeight = 1;
         playerInventory = new Inventory(inventoryWidth * inventoryHeight);
         playerInventoryDisplay = new InventoryDisplay(inventoryWidth, inventoryHeight, 30f, 35f, new Vector3(330f, -23f));
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
-        InteractiveUI pauseButton = new InteractiveUI(new Vector3(295f, -195f), new Vector3(50f, 50f), "sprite:gear_icon", EchoTest);
+        InteractiveUI pauseButton = new InteractiveUI(new Vector3(295f, -195f), new Vector3(50f, 50f), "sprite:gear_icon", null);
         InteractiveUI sellButton = new InteractiveUI(new Vector3(240f, -195f), new Vector3(50f, 50f), "sprite:dollar_icon", SellAllPlayerItems);
 
-        darknessOverlay = GC.BuildUIImage("Darkness Overlay", Vector2.zero, new Vector2(1500f, 1500f), "sprite:builtin:background", new Color(0f, 0f, 0f, 1f), isCutout: true);
+        darknessOverlay = GC.BuildUIImage("Darkness Overlay", null, Vector2.zero, new Vector2(1500f, 1500f), "sprite:builtin:background", new Color(0f, 0f, 0f, 1f), isCutout: true);
         darknessOverlay.transform.SetParent(torchLight.transform);
     }
 
@@ -116,10 +120,6 @@ public class PlayerUI : MonoBehaviour
         player.AddBalance(totalCurrencyGain);
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
     }
-    public void EchoTest()
-    {
-        Debug.Log("xd");
-    }
 
     public class InventoryDisplay
     {
@@ -141,10 +141,10 @@ public class PlayerUI : MonoBehaviour
                     int currentIndex = x + _Width * y;
                     slots[x, y] = new SlotVisual(
                         new Vector2((_SlotSize + _SlotSpacing) * x, -(_SlotSize + _SlotSpacing) * y),
-                        GC.BuildUIImage($"Inventory Slot {currentIndex + 1} Image", Vector2.zero, new Vector2(_SlotSize * 0.8f, _SlotSize * 0.8f), "sprite:builtin:background", Color.white),
-                        GC.BuildUIText($"Inventory Slot {currentIndex + 1} Name", Vector2.zero, new Vector2(_SlotSize, _SlotSize), "N/A", 5, TextAnchor.UpperLeft, "font:arial", FontStyle.Bold, Color.black, 5),
-                        GC.BuildUIText($"Inventory Slot {currentIndex + 1} Quantity", Vector2.zero, new Vector2(_SlotSize, _SlotSize), "0", 10, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5),
-                        GC.BuildUIImage($"Inventory Slot {currentIndex + 1} Backdrop", Vector2.zero, new Vector2(_SlotSize, _SlotSize), "sprite:builtin:background", Color.white),
+                        GC.BuildUIImage($"Inventory Slot {currentIndex + 1} Image", null, Vector2.zero, new Vector2(_SlotSize * 0.8f, _SlotSize * 0.8f), "sprite:builtin:background", Color.white),
+                        GC.BuildUIText($"Inventory Slot {currentIndex + 1} Name", null, Vector2.zero, new Vector2(_SlotSize, _SlotSize), "N/A", 5, TextAnchor.UpperLeft, "font:arial", FontStyle.Bold, Color.black, 5),
+                        GC.BuildUIText($"Inventory Slot {currentIndex + 1} Quantity", null, Vector2.zero, new Vector2(_SlotSize, _SlotSize), "0", 10, TextAnchor.MiddleCenter, "font:arial", FontStyle.Bold, Color.black, 5),
+                        GC.BuildUIImage($"Inventory Slot {currentIndex + 1} Backdrop", null, Vector2.zero, new Vector2(_SlotSize, _SlotSize), "sprite:builtin:background", Color.white),
                         this.main);
                 }
             }
@@ -183,8 +183,8 @@ public class PlayerUI : MonoBehaviour
     {
         public InteractiveUI(Vector3 _Pos, Vector3 _SizeDelta, string _SpriteID, UnityAction _Action)
         {
-            Image backdrop = GC.BuildUIImage("Interactive UI", _Pos, _SizeDelta, "sprite:builtin:background", Color.white);
-            Image icon = GC.BuildUIImage("Icon", _Pos, _SizeDelta, _SpriteID, Color.white);
+            Image backdrop = GC.BuildUIImage("Interactive UI", null, _Pos, _SizeDelta, "sprite:builtin:background", Color.white);
+            Image icon = GC.BuildUIImage("Icon", null, _Pos, _SizeDelta, _SpriteID, Color.white);
             icon.transform.SetParent(backdrop.transform);
             icon.transform.localPosition = Vector3.zero;
             Button button = icon.gameObject.AddComponent<Button>();

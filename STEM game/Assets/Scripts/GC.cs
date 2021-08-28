@@ -123,25 +123,31 @@ public class GC : MonoBehaviour
         velocityX = Mathf.Cos(radians) * force;
         velocityY = Mathf.Sin(radians) * force;
     }
-    private static GameObject BuildUI(string name, Vector2 pos, Vector2 scale, Vector2 sizeDelta)
+    private static GameObject BuildUI(string name, Transform parent, Vector2 pos, Vector2 scale, Vector2 sizeDelta)
     {
-        GameObject output = new GameObject(name); output.transform.parent = CanvasT;
+        GameObject output = new GameObject(name);
+        if (parent is null) output.transform.SetParent(CanvasT);
+        else output.transform.SetParent(parent);
         RectTransform RT = output.AddComponent<RectTransform>();
         output.transform.localPosition = pos; output.transform.localScale = scale; RT.sizeDelta = sizeDelta;
         return (output);
     }
-    public static Image BuildUIImage(string name, Vector2 pos, Vector2 sizeDelta, string spriteID, Color color, bool isCutout = false)
+    public static RectTransform BuildUIEmpty(string name, Transform parent, Vector2 pos)
     {
-        GameObject ui = BuildUI(name, pos, Vector2.one, sizeDelta);
+        return BuildUI(name, parent, pos, Vector2.one, new Vector2(100f, 100f)).GetComponent<RectTransform>();
+    }
+    public static Image BuildUIImage(string name, Transform parent, Vector2 pos, Vector2 sizeDelta, string spriteID, Color color, bool isCutout = false)
+    {
+        GameObject ui = BuildUI(name, parent, pos, Vector2.one, sizeDelta);
         Image I;
         if (isCutout) I = ui.AddComponent<CutoutMaskUI>();
         else I = ui.AddComponent<Image>();
         I.sprite = GetReference<Sprite>(spriteID); I.color = color; I.type = Image.Type.Sliced;
         return (I);
     }
-    public static Text BuildUIText(string name, Vector2 pos, Vector2 sizeDelta, string text, int fontSize, TextAnchor alignment, string fontID, FontStyle fontStyle, Color color, int resolution)
+    public static Text BuildUIText(string name, Transform parent, Vector2 pos, Vector2 sizeDelta, string text, int fontSize, TextAnchor alignment, string fontID, FontStyle fontStyle, Color color, int resolution)
     {
-        GameObject ui = BuildUI(name, pos, Vector2.one / resolution, sizeDelta * resolution);
+        GameObject ui = BuildUI(name, parent, pos, Vector2.one / resolution, sizeDelta * resolution);
         Text T = ui.AddComponent<Text>(); T.text = text; T.fontSize = fontSize * resolution; T.alignment = alignment; T.font = GetReference<Font>(fontID); T.fontStyle = fontStyle; T.color = color;
         return (T);
     }

@@ -11,8 +11,9 @@ public class PlayerMovementSwimming : MonoBehaviour, IPlayerMoveable
     [SerializeField] private float velocityY = 0f;
     [SerializeField] private float currentFallSpeed = 0f;
     [SerializeField] private float targetFallSpeed = 0f;
-    private const float VELOCITY_DECELERATION_RATE = 0.005f;
+    private const float VELOCITY_DECELERATION_RATE = 0.015f;
     private const float FALL_ACCELERATION_RATE = 0.005f;
+    private const float MAX_SPEED_FORCE = 3.5f;
 
     private void Awake()
     {
@@ -28,11 +29,9 @@ public class PlayerMovementSwimming : MonoBehaviour, IPlayerMoveable
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         player.visualT.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
-
-        RB.MovePosition(new Vector2(transform.position.x + velocityX, transform.position.y + velocityY - currentFallSpeed));
-        velocityX = GC.ApproachValue(velocityX, 0f, VELOCITY_DECELERATION_RATE);
-        velocityY = GC.ApproachValue(velocityY, 0f, VELOCITY_DECELERATION_RATE);
-        currentFallSpeed = GC.ApproachValue(currentFallSpeed, targetFallSpeed, FALL_ACCELERATION_RATE);
+        RB.AddForce(new Vector3(velocityX, velocityY) * 1.5f, ForceMode2D.Impulse);
+        RB.velocity = new Vector3(GC.ApproachValue(RB.velocity.x, 0f, VELOCITY_DECELERATION_RATE), GC.ApproachValue(RB.velocity.y, 0f, VELOCITY_DECELERATION_RATE));
+        RB.velocity = new Vector3(Mathf.Clamp(RB.velocity.x, -MAX_SPEED_FORCE, MAX_SPEED_FORCE), Mathf.Clamp(RB.velocity.y, -MAX_SPEED_FORCE, MAX_SPEED_FORCE));
     }
     public void Move()
     {
@@ -40,6 +39,11 @@ public class PlayerMovementSwimming : MonoBehaviour, IPlayerMoveable
         {
             GC.GetVelocityToMouse(transform.position, swimForce, out velocityX, out velocityY);
             currentFallSpeed = 0f;
+        }
+        else
+        {
+            velocityX = GC.ApproachValue(velocityX, 0f, VELOCITY_DECELERATION_RATE);
+            velocityY = GC.ApproachValue(velocityY, 0f, VELOCITY_DECELERATION_RATE);
         }
     }
 

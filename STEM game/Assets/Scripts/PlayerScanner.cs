@@ -37,18 +37,18 @@ public class PlayerScanner : MonoBehaviour
         researchBarT.localScale = new Vector3(researchRatio, 1f);
         if (researchRatio >= 1f)
         {
-            if (player.playerUI.playerInventory.IsFull())
+            CreatureBehaviour behaviour = scannedCreatureT.GetComponent<CreatureBehaviour>();
+            CreatureBase creature = behaviour.Creature;
+            InventoryItem newItem = GC.GetReference<InventoryItem>(creature.ResearchItemID);
+            if (!player.playerUI.playerInventory.HasSpaceforItem(newItem))
             {
                 UtilsClass.CreateWorldTextPopup("Inventory is full!", player.transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.red);
                 TryNewScannerState(false);
                 return;
             }
-
-            CreatureBehaviour behaviour = scannedCreatureT.GetComponent<CreatureBehaviour>();
-            CreatureBase creature = behaviour.Creature;
             if (creature.TryDeclareResearched())
             {
-                player.playerUI.ObtainItems(GC.GetReference<InventoryItem>(creature.ResearchItemID), 1);
+                player.playerUI.ObtainItems(newItem, 1);
                 scannedInstances.Remove(creature.InstanceID);
                 player.playerUI.SetAnalysis(creature.Name, creature.Description, behaviour.GetSpriteIcon());
             }

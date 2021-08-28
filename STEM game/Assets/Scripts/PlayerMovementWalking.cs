@@ -23,11 +23,14 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
 
     private void FixedUpdate()
     {
-        if (!moving) return;
         int horizontal = 0;
         if (Input.GetKey("a")) horizontal--;
         if (Input.GetKey("d")) horizontal++;
-        if (RB.velocity.y == 0f)
+        if (!moving)
+        {
+            player.visualT.rotation = Quaternion.Lerp(player.visualT.rotation, Quaternion.LookRotation(Vector3.forward, GC.GetWorldMousePos() - transform.position), 0.5f * Time.deltaTime);
+        }
+        else if (RB.velocity.y == 0f)
         {
             player.visualT.rotation = Quaternion.LookRotation(player.visualT.transform.forward, Vector3.up);
             RB.MovePosition(new Vector3(transform.position.x + horizontal * moveSpeed * Time.deltaTime, transform.position.y));

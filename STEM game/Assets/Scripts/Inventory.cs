@@ -27,6 +27,18 @@ public class Inventory
         }
         return true;
     }
+    public bool HasSpaceforItem(InventoryItem item)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            InventorySlot slot = slots[i];
+            if (!slot.IsOccupied() || (slot.GetContainedItemID() == item.ID && slot.CanAddQuantity(out _)))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public void AddItems(InventoryItem item, int quantity)
     {
         for (int i = 0; i < slots.Length; i++)
