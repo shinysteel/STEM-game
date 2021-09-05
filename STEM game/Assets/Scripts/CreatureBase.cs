@@ -11,7 +11,13 @@ public abstract class CreatureBase : InstanceBase
     {
         if (isResearched) return false;
         isResearched = true;
-        UtilsClass.CreateWorldText("isResearched", GO.transform, new Vector3(0f, 0.75f), 5, Color.green, TextAnchor.MiddleCenter, TextAlignment.Center, 100, 5);
+        GameObject icon = new GameObject("Icon", typeof(SpriteRenderer));
+        SpriteRenderer sr = icon.GetComponent<SpriteRenderer>();
+        sr.sprite = GC.GetReference<Sprite>("sprite:scanned_icon");
+        sr.sortingOrder = 25;
+        
+        icon.transform.SetParent(GO.transform);
+        icon.transform.localPosition = new Vector3(0f, 0f);
         return true;
     }
 

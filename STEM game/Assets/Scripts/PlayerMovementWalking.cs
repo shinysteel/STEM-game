@@ -16,6 +16,7 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
         RB.gravityScale = 1f;
         GC.GetVelocityToMouse(transform.position, leapForce, out float velocityX, out float velocityY);
         RB.velocity = new Vector3(velocityX, velocityY);
+        player.oxygen = Player.LUNG_CAPACITY;
     }
     private void FixedUpdate()
     {
@@ -31,6 +32,7 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
         {
             player.visualT.rotation = Quaternion.LookRotation(player.visualT.transform.forward, Vector3.up);
             RB.MovePosition(new Vector3(transform.position.x + horizontal * moveSpeed * Time.deltaTime, transform.position.y));
+            player.playerUI.oxygenBar.gameObject.SetActive(false);
         }
     }
     public void Move()

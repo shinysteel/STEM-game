@@ -17,11 +17,13 @@ public class PlayerMovementSwimming : MonoBehaviour, IPlayerMoveable
         RB = GetComponent<Rigidbody2D>();
         RB.gravityScale = 0f;
         velocityY = -swimForce * 0.5f;
+        player.playerUI.oxygenBar.gameObject.SetActive(true);
     }
-    //private void Update()
-    //{
-    //    Debug.Log(RB != null);
-    //}
+    private void Update()
+    {
+        if (!player.DoUpdate()) return;
+        player.oxygen -= Time.deltaTime;
+    }
     private void FixedUpdate()
     {
         if (!player.DoUpdate()) return;

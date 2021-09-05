@@ -17,7 +17,12 @@ public class PlayerScanner : MonoBehaviour
     [SerializeField] private Transform scannedCreatureT;
     [SerializeField] private float researchTimer;
     [SerializeField] private float timeToResearch = 1.5f;
+    [SerializeField] private GameObject researchVisual;
 
+    private void Start()
+    {
+        researchVisual.SetActive(false);
+    }
     private void Update()
     {
         if (!player.DoUpdate()) return;
@@ -52,6 +57,8 @@ public class PlayerScanner : MonoBehaviour
                 player.playerUI.ObtainItems(newItem, 1);
                 scannedInstances.Remove(creature.InstanceID);
                 player.playerUI.SetAnalysis(creature.Name, creature.Description, behaviour.GetSpriteIcon());
+                player.playerUI.analysisAC.Play("analysis_display_show", -1, 0f);
+                GC.PlaySound("sound:alert1", 0.6f, 1f, pitchRandomness: 0f);
             }
             TryNewScannerState(false);
         }
@@ -62,6 +69,7 @@ public class PlayerScanner : MonoBehaviour
         researchTimer = 0f;
         if (isScanningCreature && newState == true)
         {
+            researchVisual.SetActive(true);
             isScanning = true;
             researchUIGO.SetActive(true);
             GC.PlaySound("sound:scanner_on1", 0.8f, 1f);
@@ -82,7 +90,8 @@ public class PlayerScanner : MonoBehaviour
             scannedCreatureIcon.sprite = scannedCreatureT.GetComponent<CreatureBehaviour>().GetSpriteIcon();
         }
         else
-        { 
+        {
+            researchVisual.SetActive(false);
             isScanning = false;
             researchUIGO.SetActive(false);
             targetInstanceID = -1;

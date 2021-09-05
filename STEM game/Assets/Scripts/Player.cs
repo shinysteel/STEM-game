@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using System;
+using ShinyOwl.Utils;
 
 public class Player : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class Player : MonoBehaviour
 
     public const float TOP_OF_MAP = -8.5f;
     public const float PITCH_BLACK_DEPTH = -190f;
+    public const float LUNG_CAPACITY = 35f;
 
     [Header("Dive Data")]
     public float time;
@@ -21,12 +23,14 @@ public class Player : MonoBehaviour
     public float temperature;
     public float darkness;
     public float balance;
+    public float oxygen;
 
     public IPlayerMoveable playerMovement;
     [SerializeField] private bool paused;
     public PlayerUI playerUI;
     public PlayerScanner playerScanner;
     public PlayerAnimator playerAnimator;
+    private Vector3 spawnPos;
     private void Awake()
     {
         playerUI = GetComponent<PlayerUI>(); playerUI.player = this;
@@ -35,18 +39,30 @@ public class Player : MonoBehaviour
     }
     private void Start()
     {
-        PlayerMovementSwimming playerMovementSwimming = gameObject.AddComponent<PlayerMovementSwimming>();
-        playerMovementSwimming.player = this;
-        playerMovement = playerMovementSwimming;
+        PlayerMovementWalking playerMovementWalking = gameObject.AddComponent<PlayerMovementWalking>();
+        playerMovementWalking.player = this;
+        playerMovement = playerMovementWalking;
 
         paused = GC.paused;
         GC.OnPause += Player_UpdatePauseState;
+        spawnPos = transform.position;
     }
 
     private void LateUpdate() { Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, CAMERA_Z_DISTANCE); }
     private void Update()
     {
         if (!DoUpdate()) return;
+
+        if (oxygen <= 0f)
+        {
+            transform.position = spawnPos;
+            oxygen = LUNG_CAPACITY;
+            GC.PlaySound("sound:bubble1", 0.7f, 1f, pitchRandomness: 0f);
+            playerUI.oxygenBar.gameObject.SetActive(false);
+            UtilsClass.CreateWorldTextPopup("You ran out of breath!", transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.red);
+            return;
+        }
+
         playerMovement = playerMovement.UpdateMovementType();
 
         if (Input.GetKeyDown("e")) { playerScanner.TryNewScannerState(true); }

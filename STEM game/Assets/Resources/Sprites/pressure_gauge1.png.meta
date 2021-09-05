@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5cfd4419f98fcf241adf53339136f410
+guid: 7b7eb62665a2aed4d9931318cb78470f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7957164770282097094
-    second: black_bass
+      213: -5666019535854837432
+    second: pressure_gauge1_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 400
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -68,7 +68,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -80,27 +80,27 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 16384
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 74
     textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 0
+    overridden: 1
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: black_bass
+      name: pressure_gauge1_0
       rect:
         serializedVersion: 2
-        x: 20
-        y: 40
-        width: 660
-        height: 240
+        x: 62
+        y: 31
+        width: 259
+        height: 244
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -108,8 +108,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c9caef13378d6e60800000000000000
-      internalID: 7957164770282097094
+      spriteID: 841e2f280414e51b0800000000000000
+      internalID: -5666019535854837432
       vertices: []
       indices: 
       edges: []

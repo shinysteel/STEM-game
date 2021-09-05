@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5cfd4419f98fcf241adf53339136f410
+guid: 2adc3edf375f80c48856438b7b66d435
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7957164770282097094
-    second: black_bass
+      213: -879382615266547979
+    second: scanned_icon1_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 400
+  spritePixelsToUnits: 200
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -68,7 +68,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -80,7 +80,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -94,13 +94,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: black_bass
+      name: scanned_icon1_0
       rect:
         serializedVersion: 2
-        x: 20
-        y: 40
-        width: 660
-        height: 240
+        x: 66
+        y: 66
+        width: 165
+        height: 159
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -108,8 +108,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c9caef13378d6e60800000000000000
-      internalID: 7957164770282097094
+      spriteID: 5f6226bab2ecbc3f0800000000000000
+      internalID: -879382615266547979
       vertices: []
       indices: 
       edges: []

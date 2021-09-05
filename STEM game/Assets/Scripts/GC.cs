@@ -19,6 +19,7 @@ public class GC : MonoBehaviour
     [SerializeField] private GameObject titleScreenGO;
     [SerializeField] private GameObject pauseScreenGO;
     [SerializeField] private GameObject gameplayInterfaceGO;
+    [SerializeField] private GameObject inventoryScreenGO;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider audioSlider;
     private static float musicVolume = 0.5f;
@@ -40,6 +41,9 @@ public class GC : MonoBehaviour
         referenceHash.Add("sound:swimming_loop1", Resources.Load<AudioClip>("Sounds/swimming_loop1"));
         referenceHash.Add("sound:earn_money1", Resources.Load<AudioClip>("Sounds/earn_money1"));
         referenceHash.Add("sound:ui_click1", Resources.Load<AudioClip>("Sounds/ui_click1"));
+        referenceHash.Add("sound:menu_close1", Resources.Load<AudioClip>("Sounds/menu_close1"));
+        referenceHash.Add("sound:alert1", Resources.Load<AudioClip>("Sounds/alert1"));
+        referenceHash.Add("sound:bubble1", Resources.Load<AudioClip>("Sounds/bubble1"));
         referenceHash.Add("sprite:builtin:background", null);
         referenceHash.Add("sprite:builtin:knob", null);
         referenceHash.Add("font:arial", Resources.GetBuiltinResource<Font>("Arial.ttf"));
@@ -56,6 +60,7 @@ public class GC : MonoBehaviour
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/icons1"), "sprite:dollar_icon", "sprite:gear_icon");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/black_bass1"), "sprite:black_bass");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/orange_cup_coral1"), "sprite:orange_cup_coral");
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/scanned_icon1"), "sprite:scanned_icon");
         AddItemToReferenceHash("item:fish_research_paper", "Fish Research Paper", 2f, 3, "sprite:fish_research_paper");
         AddItemToReferenceHash("item:coral_research_paper", "Coral Research Paper", 4.5f, 2, "sprite:coral_research_paper");
         AddItemToReferenceHash("item:squid_research_paper", "Squid Research Paper", 50f, 1, "sprite:squid_research_paper");
@@ -71,16 +76,46 @@ public class GC : MonoBehaviour
         instanceParent = new GameObject("Instances").transform;
 
         CanvasT = _CanvasT;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             CreateInstance("creature:blue_fish", -10f, -15f);
             CreateInstance("creature:purple_fish", -10f, -15f);
             CreateInstance("creature:black_bass", -10f, -15f);
         }
-        CreateInstance("creature:giant_squid", 10f, -102f);
-        CreateInstance("creature:orange_cup_coral", -12f, -25.75f);
-        CreateInstance("creature:orange_cup_coral", -14.6f, -25.9f);
+        for (int i = 0; i < 4; i++)
+        {
+            CreateInstance("creature:blue_fish", 9.3f, -23.3f);
+            CreateInstance("creature:purple_fish", 9.3f, -23.3f);
+            CreateInstance("creature:black_bass", 9.3f, -23.3f);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            CreateInstance("creature:blue_fish", 3.7f, -54.8f);
+            CreateInstance("creature:purple_fish", 3.7f, -54.8f);
+            CreateInstance("creature:black_bass", 3.7f, -54.8f);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            CreateInstance("creature:blue_fish", -12.05f, -59.24f);
+            CreateInstance("creature:purple_fish", -12.05f, -59.24f);
+            CreateInstance("creature:black_bass", -12.05f, -59.24f);
+        }
+        CreateInstance("creature:giant_squid", -3f, -27f);
+        CreateInstance("creature:giant_squid", 3.7f, -54.8f);
+        CreateInstance("creature:orange_coral", -12f, -25.75f);
+        CreateInstance("creature:yellow_coral", -14.6f, -25.9f);
         CreateInstance("creature:orange_cup_coral", -16.7f, -25.5f);
+        CreateInstance("creature:orange_cup_coral", 22.42f, -26.83f);
+        CreateInstance("creature:orange_cup_coral", 24.69f, -26.55f);
+        CreateInstance("creature:orange_cup_coral", 27.92f, -26.78f);
+        CreateInstance("creature:orange_coral", 41.97f, -25.93f);
+        CreateInstance("creature:yellow_coral", 44.8f, -25.25f);
+        CreateInstance("creature:yellow_coral", 22.4f, -52.3f);
+        CreateInstance("creature:yellow_coral", 24.7f, -51.73f);
+        CreateInstance("creature:yellow_coral", 28.96f, -51.9f);
+        CreateInstance("creature:orange_cup_coral", -2.69f, -64.28f);
+        CreateInstance("creature:orange_cup_coral", -7.37f, -64.83f);
+        CreateInstance("creature:orange_cup_coral", -12.23f, -63.64f);
     }
     private void Start()
     {
@@ -96,7 +131,6 @@ public class GC : MonoBehaviour
         paused = !paused;
         pauseScreenGO.SetActive(!pauseScreenGO.activeSelf);
         gameplayInterfaceGO.SetActive(!gameplayInterfaceGO.activeSelf);
-        PlaySound("sound:game_pause1", 0.2f, paused ? 0.85f : 1f, pitchRandomness: 0f);
     }
     public static int GetNewInstanceID()
     {
@@ -209,6 +243,7 @@ public class GC : MonoBehaviour
         titleScreenGO.SetActive(true);
         pauseScreenGO.SetActive(false);
         gameplayInterfaceGO.SetActive(false);
+        inventoryScreenGO.SetActive(false);
     }
     public void StartGame()
     {
@@ -227,11 +262,15 @@ public class GC : MonoBehaviour
     }
     public void UIClickInto()
     {
-        PlaySound("sound:ui_click1", 0.25f, 1f, pitchRandomness: 0f);
+        PlaySound("sound:ui_click1", 0.3f, 1f, pitchRandomness: 0f);
     }
     public void UIClickOut()
     {
-        PlaySound("sound:ui_click1", 0.25f, 0.85f, pitchRandomness: 0f);
+        PlaySound("sound:menu_close1", 0.3f, 1f, pitchRandomness: 0f);
+    }
+    public void UpdateInventoryState()
+    {
+        inventoryScreenGO.SetActive(!inventoryScreenGO.activeSelf);
     }
     
     public void OnMusicSliderChange()
