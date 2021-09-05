@@ -45,8 +45,8 @@ public class PlayerUI : MonoBehaviour
         playerInventory = new Inventory(inventoryWidth * inventoryHeight);
         playerInventoryDisplay = new InventoryDisplay(inventoryWidth, inventoryHeight, 30f, 35f, new Vector3(330f, -23f));
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
-        InteractiveUI pauseButton = new InteractiveUI(new Vector3(295f, -195f), new Vector3(50f, 50f), "sprite:gear_icon", null);
-        InteractiveUI sellButton = new InteractiveUI(new Vector3(240f, -195f), new Vector3(50f, 50f), "sprite:dollar_icon", SellAllPlayerItems);
+        //InteractiveUI pauseButton = new InteractiveUI(new Vector3(295f, -195f), new Vector3(50f, 50f), "sprite:gear_icon", GC.UpdatePausedState);
+        //InteractiveUI sellButton = new InteractiveUI(new Vector3(240f, -195f), new Vector3(50f, 50f), "sprite:dollar_icon", SellAllPlayerItems);
 
         darknessOverlay = GC.BuildUIImage("Darkness Overlay", null, Vector2.zero, new Vector2(1500f, 1500f), "sprite:builtin:background", new Color(0f, 0f, 0f, 1f), isCutout: true);
         darknessOverlay.transform.SetParent(torchLight.transform);
@@ -54,6 +54,7 @@ public class PlayerUI : MonoBehaviour
 
     private void Update()
     {
+        if (!player.DoUpdate()) return;
         Vector2 dir = new Vector2(Input.mousePosition.x - Screen.width * 0.5f, Input.mousePosition.y - Screen.height * 0.5f);
         lightPointer.transform.rotation = Quaternion.LookRotation(Vector3.forward, dir);
     }
@@ -111,7 +112,12 @@ public class PlayerUI : MonoBehaviour
             totalCurrencyGain += currencyGain * slot.Quantity;
             for (int j = 0; j < slot.Quantity; j++)
             {
-                FunctionTimer.Create(() => UtilsClass.CreateWorldTextPopup($"+${currencyGain}", player.transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.green),
+                FunctionTimer.Create(
+                    () =>
+                    {
+                        UtilsClass.CreateWorldTextPopup($"+${currencyGain}", player.transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.green);
+                        GC.PlaySound("sound:earn_money1", 0.6f, pitchRandomness: 0f);
+                    },
                     delayTimer);
                 delayTimer += delayIncrement;
             }
@@ -185,6 +191,7 @@ public class PlayerUI : MonoBehaviour
         {
             Image backdrop = GC.BuildUIImage("Interactive UI", null, _Pos, _SizeDelta, "sprite:builtin:background", Color.white);
             Image icon = GC.BuildUIImage("Icon", null, _Pos, _SizeDelta, _SpriteID, Color.white);
+            backdrop.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
             icon.transform.SetParent(backdrop.transform);
             icon.transform.localPosition = Vector3.zero;
             Button button = icon.gameObject.AddComponent<Button>();

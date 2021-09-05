@@ -18,24 +18,27 @@ public class FishBehaviour : CreatureBehaviour
     [SerializeField] private float idleTimer;
     private const float VELOCITY_DECELERATION_RATE = 0.005f;
 
+    private SpriteRenderer sr;
     private Rigidbody2D rb;
     private enum State { Idle, Roaming }
     private State state;
     private void Awake()
     {
+        sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         state = State.Roaming;
     }
-    private void Start()
+    protected override void Start()
     {
+        base.Start();   
         GetComponent<SpriteRenderer>().sprite = GC.GetReference<Sprite>(fish.SpriteID);
         rb.freezeRotation = true;
         gameObject.AddComponent<CapsuleCollider2D>();
         UpdateState();
     }
-
     private void Update()
     {
+        if (!DoUpdate()) return;
         switch (state)
         {
             case State.Idle:
@@ -75,7 +78,8 @@ public class FishBehaviour : CreatureBehaviour
                 velocityX = Mathf.Cos(radians) * fish.SwimForce;
                 velocityY = Mathf.Sin(radians) * fish.SwimForce;
                 moveTimer = Random.Range(1f, 2f);
-                transform.rotation = Quaternion.LookRotation(Vector3.forward, moveDir);
+                sr.flipX = velocityX >= 0f;
+                //transform.rotation = Quaternion.LookRotation(Vector3.forward, moveDir);
                 break;
             default:
                 break;

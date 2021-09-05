@@ -7,28 +7,25 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
     public Player player { get; set; }
     private float leapForce = 7.5f;
     private float moveSpeed = 6f;
-    private Rigidbody2D RB;
+    public Rigidbody2D RB { get; set; }
     private bool moving = false;
 
-    private void Awake()
-    {
-        RB = GetComponent<Rigidbody2D>();
-    }
     private void Start()
     {
+        RB = GetComponent<Rigidbody2D>();
         RB.gravityScale = 1f;
         GC.GetVelocityToMouse(transform.position, leapForce, out float velocityX, out float velocityY);
         RB.velocity = new Vector3(velocityX, velocityY);
     }
-
     private void FixedUpdate()
     {
+        if (!player.DoUpdate()) return;
         int horizontal = 0;
         if (Input.GetKey("a")) horizontal--;
         if (Input.GetKey("d")) horizontal++;
         if (!moving)
         {
-            player.visualT.rotation = Quaternion.Lerp(player.visualT.rotation, Quaternion.LookRotation(Vector3.forward, GC.GetWorldMousePos() - transform.position), 0.5f * Time.deltaTime);
+            player.visualT.rotation = Quaternion.Lerp(player.visualT.rotation, Quaternion.LookRotation(Vector3.forward, GC.GetWorldMousePos() - transform.position), 360f * Time.deltaTime);
         }
         else if (RB.velocity.y == 0f)
         {
@@ -36,7 +33,6 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
             RB.MovePosition(new Vector3(transform.position.x + horizontal * moveSpeed * Time.deltaTime, transform.position.y));
         }
     }
-
     public void Move()
     {
         Debug.DrawRay(transform.position + new Vector3(0.46f, -1f), Vector3.down * 0.1f, Color.red);
@@ -54,10 +50,14 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
         }
         moving = groundsHit > 0;
     }
-
+    public void MoveEvent()
+    {
+        return;
+    }
     public IPlayerMoveable UpdateMovementType()
     {
         if (player.transform.position.y >= Player.TOP_OF_MAP) return this;
+        GC.PlaySound("sound:jump_splash1", 0.8f, 1f, 1);
         Destroy(GetComponent<PlayerMovementWalking>());
         PlayerMovementSwimming playerMovementSwimming = gameObject.AddComponent<PlayerMovementSwimming>();
         playerMovementSwimming.player = player;

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System;
+
 public class Player : MonoBehaviour
 {
     private const int CAMERA_Z_DISTANCE = -5;
@@ -20,24 +22,31 @@ public class Player : MonoBehaviour
     public float darkness;
     public float balance;
 
-    private IPlayerMoveable playerMovement;
+    public IPlayerMoveable playerMovement;
+    [SerializeField] private bool paused;
     public PlayerUI playerUI;
     public PlayerScanner playerScanner;
+    public PlayerAnimator playerAnimator;
     private void Awake()
     {
         playerUI = GetComponent<PlayerUI>(); playerUI.player = this;
         playerScanner = scannerGO.GetComponent<PlayerScanner>(); playerScanner.player = this;
+        playerAnimator = GetComponent<PlayerAnimator>(); playerAnimator.player = this;
     }
     private void Start()
     {
         PlayerMovementSwimming playerMovementSwimming = gameObject.AddComponent<PlayerMovementSwimming>();
         playerMovementSwimming.player = this;
         playerMovement = playerMovementSwimming;
+
+        paused = GC.paused;
+        GC.OnPause += Player_UpdatePauseState;
     }
 
     private void LateUpdate() { Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, CAMERA_Z_DISTANCE); }
     private void Update()
     {
+        if (!DoUpdate()) return;
         playerMovement = playerMovement.UpdateMovementType();
 
         if (Input.GetKeyDown("e")) { playerScanner.TryNewScannerState(true); }
@@ -62,6 +71,16 @@ public class Player : MonoBehaviour
     public void AddBalance(float amount)
     {
         balance += amount;
+    }
+    public void Player_UpdatePauseState(object sender, EventArgs e)
+    {
+        if (this == null) return;
+        playerMovement.RB.simulated = !playerMovement.RB.simulated;
+        paused = !paused;
+    }
+    public bool DoUpdate()
+    {
+        return !paused;
     }
 }
 

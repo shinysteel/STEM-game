@@ -23,14 +23,16 @@ public class CoralBehaviour : CreatureBehaviour
     private SpriteRenderer sr;
     private void Awake() { sr = GetComponent<SpriteRenderer>(); }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         gameObject.AddComponent<CapsuleCollider2D>();
         sr.sprite = GC.GetReference<Sprite>(coral.IdleSpritesIDs[0]);
         nextSpriteID = 1;
     }
     private void Update()
     {
+        if (!DoUpdate()) return;
         flickerTimer += Time.deltaTime;
         if (flickerTimer >= flickTime)
         {

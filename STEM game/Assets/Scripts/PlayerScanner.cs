@@ -20,6 +20,7 @@ public class PlayerScanner : MonoBehaviour
 
     private void Update()
     {
+        if (!player.DoUpdate()) return;
         if (targetInstanceID != -1)
         {
             if (!scannedInstances.Contains(targetInstanceID))
@@ -63,6 +64,9 @@ public class PlayerScanner : MonoBehaviour
         {
             isScanning = true;
             researchUIGO.SetActive(true);
+            GC.PlaySound("sound:scanner_on1", 0.8f, 1f);
+            GC.PlaySound("sound:scanner_scanning1", 0.8f, 1f, cutoff: timeToResearch);
+            player.playerAnimator.PlayAnimation("player_scan");
 
             float smallestDist = Mathf.Infinity;
             int closestInstanceID = -1;
