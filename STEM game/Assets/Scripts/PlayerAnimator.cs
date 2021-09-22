@@ -18,7 +18,7 @@ public class PlayerAnimator : MonoBehaviour
         }
         else
         {
-            ac.speed = 1f;
+            ac.speed = 2f;
         }
     }
     public void PlayAnimation(string id)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ShinyOwl.Utils;
+using System;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
@@ -16,9 +17,11 @@ public class PlayerUI : MonoBehaviour
     public TextMeshProUGUI balanceText;
     public TextMeshProUGUI analysisTitle; public TextMeshProUGUI analysisDescription; public Image analysisDisplay;
     public Animator analysisAC;
-    public Transform oxygenBar;
-    public Transform oxygenBarOrigin;
     public Transform playerInventoryT;
+    public Transform hotbarReference;
+    public GameObject fillBarPrefab;
+    private static int hotbarBarCount = 0;
+    private const float HOTBAR_Y_SPACING = 23.5f;
     [SerializeField] private RectTransform lightPointer;
     [SerializeField] private RectTransform torchLight;
     //[SerializeField] private RectTransform pressurePointer;
@@ -53,11 +56,11 @@ public class PlayerUI : MonoBehaviour
         playerInventoryDisplay.Main.transform.SetParent(playerInventoryT);
         playerInventoryDisplay.Main.transform.localPosition = new Vector3(0f, 15f);
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
-        //InteractiveUI pauseButton = new InteractiveUI(new Vector3(295f, -195f), new Vector3(50f, 50f), "sprite:gear_icon", GC.UpdatePausedState);
-        //InteractiveUI sellButton = new InteractiveUI(new Vector3(240f, -195f), new Vector3(50f, 50f), "sprite:dollar_icon", SellAllPlayerItems);
 
         darknessOverlay = GC.BuildUIImage("Darkness Overlay", null, Vector2.zero, new Vector2(1500f, 1500f), "sprite:builtin:background", new Color(0f, 0f, 0f, 1f), isCutout: true);
         darknessOverlay.transform.SetParent(torchLight.transform);
+
+        hotbarBarCount = 0;
     }
 
     private void Update()
@@ -66,7 +69,33 @@ public class PlayerUI : MonoBehaviour
         Vector2 dir = new Vector2(Input.mousePosition.x - Screen.width * 0.5f, Input.mousePosition.y - Screen.height * 0.5f);
         lightPointer.transform.rotation = Quaternion.LookRotation(Vector3.forward, dir);
         pressurePointerOrigin.transform.eulerAngles = new Vector3(0f, 0f, Mathf.Clamp(232f - 283f * (player.darkness * 1.5f), -51f, 232f));
-        oxygenBarOrigin.localScale = new Vector3(1f, player.oxygen / Player.LUNG_CAPACITY);
+
+        if (Input.GetKey("1") && !Input.GetKey("3"))
+        {
+            if (Input.GetKeyDown("1"))
+            {
+                float pitchChange = 0f;
+                for (int i = 0; i < 2; i++)
+                {
+                    GC.PlaySound("sound:buoyancy_adjust1", 0.45f, 0.8f + pitchChange, delay: Mathf.Abs(pitchChange) * 1.25f);
+                    pitchChange -= 0.05f;
+                }
+            }
+            player.BCInflation -= 3f * Time.deltaTime;
+        }
+        else if (Input.GetKey("3"))
+        {
+            if (Input.GetKeyDown("3"))
+            {
+                float pitchChange = 0f;
+                for (int i = 0; i < 2; i++)
+                {
+                    GC.PlaySound("sound:buoyancy_adjust1", 0.45f, 1f + pitchChange, delay: Mathf.Abs(pitchChange) * 1.25f);
+                    pitchChange += 0.05f;
+                }
+            }
+            player.BCInflation += 3f * Time.deltaTime;
+        }
     }
 
     public void SetDarkness(float newOpacity) { darknessOverlay.color = new Color(darknessOverlay.color.r, darknessOverlay.color.g, darknessOverlay.color.b, newOpacity); }
@@ -76,8 +105,34 @@ public class PlayerUI : MonoBehaviour
         analysisTitle.text = title;
         analysisDescription.text = description;
         analysisDisplay.sprite = sprite;
+        analysisDisplay.SetNativeSize();
     }
     public void SetBalance(float newBalance) { balanceText.text = $"${newBalance}"; }
+
+    public void CreateFillBar(Func<float> getValue, Func<bool> killCondition, string textValue, Color fillColor)
+    {
+        GameObject fillBar = Instantiate(fillBarPrefab, hotbarReference);
+        fillBar.transform.localPosition += new Vector3(0f, HOTBAR_Y_SPACING * hotbarBarCount);
+        hotbarBarCount++;
+        Transform origin = fillBar.transform.GetChild(1);
+        origin.GetChild(0).GetComponent<Image>().color = fillColor;
+        TextMeshProUGUI textUI = fillBar.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+        textUI.text = textValue;
+        FunctionUpdater.Create(() =>
+        {
+            if (killCondition() == true)
+            {
+                Destroy(fillBar);
+                hotbarBarCount--;
+                return true;
+            }
+            else
+            {
+                origin.transform.localScale = new Vector3(Mathf.Clamp(getValue(), 0f, 1f), 1f);
+                return false;
+            }
+        });
+    }
 
     public void ObtainItems(InventoryItem item, int quantity)
     {

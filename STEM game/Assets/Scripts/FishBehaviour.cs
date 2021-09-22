@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System;
+using Random = UnityEngine.Random;
+
 public class FishBehaviour : CreatureBehaviour
 {
     public Fish fish;
@@ -20,13 +23,13 @@ public class FishBehaviour : CreatureBehaviour
 
     private SpriteRenderer sr;
     private Rigidbody2D rb;
-    private enum State { Idle, Roaming }
+    private enum State { Idle, Roaming, Startled, Fleeing }
     private State state;
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-        state = State.Roaming;
+        state = State.Idle;
     }
     protected override void Start()
     {
@@ -34,8 +37,58 @@ public class FishBehaviour : CreatureBehaviour
         GetComponent<SpriteRenderer>().sprite = GC.GetReference<Sprite>(fish.SpriteID);
         rb.freezeRotation = true;
         gameObject.AddComponent<CapsuleCollider2D>();
-        UpdateState();
+        fish.Start();
     }
+    private void FixedUpdate()
+    {
+        fish.FixedUpdate();
+    }
+    private void Update()
+    {
+        fish.Update();
+        if ((int)state < 2 && Vector3.Distance(transform.position, GC.PlayerT.position) <= fish.SenseRange)
+        {
+            fish.Interrupt();
+            state = State.Startled;
+        }
+
+        switch (state)
+        {
+            case State.Idle:
+                if (fish.isIdle)
+                {
+                    fish.Wait(Random.Range(fish.IdleTime, fish.IdleTime + 1f), () => { state = State.Roaming; });
+                }
+                break;
+            case State.Roaming:
+                if (fish.isIdle)
+                {
+                    Vector3 targetPos = transform.position + new Vector3(Random.Range(-fish.WanderTendency, fish.WanderTendency), Random.Range(-fish.WanderTendency, fish.WanderTendency));
+                    targetPos = new Vector3(targetPos.x, Mathf.Clamp(targetPos.y, targetPos.y, Player.TOP_OF_MAP));
+                    fish.MoveTo(targetPos, 0.5f, () => state = State.Idle, 6.5f);
+                }
+                break;
+            case State.Startled:
+                if (fish.isIdle)
+                {
+                    GC.CreatePopupSprite("sprite:alert_icon", transform, Vector3.zero);
+                    fish.Wait(fish.StartleTime, () => state = State.Fleeing);
+                }
+                break;
+            case State.Fleeing:
+                if (fish.isIdle)
+                {
+                    GC.PlaySound("sound:fish_dart1", 0.7f, 1f);
+                    Vector3 dirAwayFromPlayer = (transform.position - GC.PlayerT.position).normalized;
+                    Vector3 targetPos = transform.position + dirAwayFromPlayer;
+                    fish.MoveTo(targetPos, 0.05f, () => state = State.Idle, 0.1f, 2.5f);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    /*
     private void Update()
     {
         if (!DoUpdate()) return;
@@ -86,4 +139,5 @@ public class FishBehaviour : CreatureBehaviour
             
         }
     }
+    */
 }

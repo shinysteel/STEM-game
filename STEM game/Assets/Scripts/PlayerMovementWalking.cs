@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
 {
     public Player player { get; set; }
-    private float leapForce = 7.5f;
+    private float leapForce = 6.5f;
     private float moveSpeed = 6f;
     public Rigidbody2D RB { get; set; }
     private bool moving = false;
@@ -15,7 +15,7 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
         RB = GetComponent<Rigidbody2D>();
         RB.gravityScale = 1f;
         GC.GetVelocityToMouse(transform.position, leapForce, out float velocityX, out float velocityY);
-        RB.velocity = new Vector3(velocityX, velocityY);
+        RB.velocity = new Vector3(velocityX, velocityY * 1.2f);
         player.oxygen = Player.LUNG_CAPACITY;
     }
     private void FixedUpdate()
@@ -32,7 +32,6 @@ public class PlayerMovementWalking : MonoBehaviour, IPlayerMoveable
         {
             player.visualT.rotation = Quaternion.LookRotation(player.visualT.transform.forward, Vector3.up);
             RB.MovePosition(new Vector3(transform.position.x + horizontal * moveSpeed * Time.deltaTime, transform.position.y));
-            player.playerUI.oxygenBar.gameObject.SetActive(false);
         }
     }
     public void Move()

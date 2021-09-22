@@ -24,6 +24,14 @@ public class Player : MonoBehaviour
     public float darkness;
     public float balance;
     public float oxygen;
+    [Header("Other Data")]
+    [SerializeField] private float bcInflation;
+    public float BCInflation
+    {
+        get { return bcInflation; }
+        set { bcInflation = Mathf.Clamp(value, -BC_INFLATION_BOUND, BC_INFLATION_BOUND); }
+    }
+    public const float BC_INFLATION_BOUND = 5f;
 
     public IPlayerMoveable playerMovement;
     [SerializeField] private bool paused;
@@ -48,17 +56,18 @@ public class Player : MonoBehaviour
         spawnPos = transform.position;
     }
 
-    private void LateUpdate() { Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, CAMERA_Z_DISTANCE); }
+    private void LateUpdate()
+    {
+        Camera.main.transform.position = new Vector3(Mathf.Clamp(transform.position.x, -14.45f, 35.5f), transform.position.y, CAMERA_Z_DISTANCE);
+    }
     private void Update()
     {
         if (!DoUpdate()) return;
-
         if (oxygen <= 0f)
         {
             transform.position = spawnPos;
             oxygen = LUNG_CAPACITY;
             GC.PlaySound("sound:bubble1", 0.7f, 1f, pitchRandomness: 0f);
-            playerUI.oxygenBar.gameObject.SetActive(false);
             UtilsClass.CreateWorldTextPopup("You ran out of breath!", transform, Vector3.zero, new Vector3(0f, 2.5f), 1.5f, 4, Color.red);
             return;
         }
@@ -70,7 +79,7 @@ public class Player : MonoBehaviour
         playerMovement.Move();
 
         // time
-        depth = Mathf.Abs(Mathf.Clamp(Mathf.RoundToInt((transform.position.y - TOP_OF_MAP)), -999, 0));
+        depth = Mathf.Abs(Mathf.Clamp(Mathf.RoundToInt((transform.position.y - TOP_OF_MAP) * 0.5f), -999, 0));
         // weight
         // temperature
         darkness = (transform.position.y - TOP_OF_MAP) / (PITCH_BLACK_DEPTH - TOP_OF_MAP);

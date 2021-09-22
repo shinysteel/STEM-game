@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5cfd4419f98fcf241adf53339136f410
+guid: 50ea58f95d78d2543bb0a7fb2a2e55cd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7957164770282097094
-    second: black_bass
+      213: -6336608755626947234
+    second: squid_bend
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 400
+  spritePixelsToUnits: 225
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -94,13 +94,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: black_bass
+      name: squid_bend
       rect:
         serializedVersion: 2
-        x: 20
-        y: 40
-        width: 660
-        height: 240
+        x: 190
+        y: 90
+        width: 145
+        height: 305
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -108,8 +108,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c9caef13378d6e60800000000000000
-      internalID: 7957164770282097094
+      spriteID: e5dc938d8e7df08a0800000000000000
+      internalID: -6336608755626947234
       vertices: []
       indices: 
       edges: []

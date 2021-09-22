@@ -11,9 +11,6 @@ public class PlayerScanner : MonoBehaviour
     [SerializeField] private List<int> scannedInstances = new List<int>();
     [SerializeField] private bool isScanningCreature;
     [SerializeField] private int targetInstanceID;
-    [SerializeField] private GameObject researchUIGO;
-    [SerializeField] private Transform researchBarT;
-    [SerializeField] private SpriteRenderer scannedCreatureIcon;
     [SerializeField] private Transform scannedCreatureT;
     [SerializeField] private float researchTimer;
     [SerializeField] private float timeToResearch = 1.5f;
@@ -40,7 +37,6 @@ public class PlayerScanner : MonoBehaviour
             researchTimer += Time.deltaTime;
         }
         float researchRatio = Mathf.Clamp((researchTimer / timeToResearch), 0f, 1f);
-        researchBarT.localScale = new Vector3(researchRatio, 1f);
         if (researchRatio >= 1f)
         {
             CreatureBehaviour behaviour = scannedCreatureT.GetComponent<CreatureBehaviour>();
@@ -69,9 +65,9 @@ public class PlayerScanner : MonoBehaviour
         researchTimer = 0f;
         if (isScanningCreature && newState == true)
         {
+            player.playerUI.CreateFillBar(() => { return researchTimer / timeToResearch; }, () => { return isScanning == false; }, "Scanning", Color.green);
             researchVisual.SetActive(true);
             isScanning = true;
-            researchUIGO.SetActive(true);
             GC.PlaySound("sound:scanner_on1", 0.8f, 1f);
             GC.PlaySound("sound:scanner_scanning1", 0.8f, 1f, cutoff: timeToResearch);
             player.playerAnimator.PlayAnimation("player_scan");
@@ -87,13 +83,11 @@ public class PlayerScanner : MonoBehaviour
             }
             targetInstanceID = closestInstanceID;
             scannedCreatureT = GC.GetInstanceByID(targetInstanceID).transform;
-            scannedCreatureIcon.sprite = scannedCreatureT.GetComponent<CreatureBehaviour>().GetSpriteIcon();
         }
         else
         {
             researchVisual.SetActive(false);
             isScanning = false;
-            researchUIGO.SetActive(false);
             targetInstanceID = -1;
         }
     }
