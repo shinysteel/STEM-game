@@ -24,11 +24,13 @@ public abstract class CreatureBase : InstanceBase
     private string name; public string Name { get { return name; } }
     private string description; public string Description { get { return description; } }
     private string researchItemID; public string ResearchItemID { get { return researchItemID; } }
-    public CreatureBase(string _Name, string _Description, string _ResearchItemID, GameObject _GO, int _InstanceID, string _ReferenceID) : base(_GO, _InstanceID, _ReferenceID)
+    private Sprite displaySpirte; public Sprite DisplaySprite { get { return displaySpirte; } }
+    public CreatureBase(string _Name, string _Description, string _ResearchItemID, Sprite _DisplaySprite, GameObject _GO, int _InstanceID, string _ReferenceID) : base(_GO, _InstanceID, _ReferenceID)
     {
         name = _Name;
         if (_Description == null) description = $"It's a {_Name}!";
         else description = _Description;
         researchItemID = _ResearchItemID;
+        displaySpirte = _DisplaySprite;
     }
 }

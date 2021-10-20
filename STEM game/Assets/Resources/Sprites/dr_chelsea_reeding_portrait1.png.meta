@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: ee1f3b8e7514f204a988c7c8ca10f359
+guid: 3deab1a851b09934ab6a24dd7046edb0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -567953636257737967
-    second: map_full
-  - first:
-      213: 7163923447923616723
-    second: map_sky_segment
-  - first:
-      213: 4023099939776562796
-    second: map_ocean_segment
+      213: 589282859486659017
+    second: dr_chelsea_reeding_portrait1_0
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -86,27 +80,27 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 16384
+    maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: 74
-    textureCompression: 1
+    textureFormat: -1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
-    overridden: 1
+    overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: map_full
+      name: dr_chelsea_reeding_portrait1_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1920
-        height: 8000
+        x: 97
+        y: 758
+        width: 300
+        height: 300
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -114,50 +108,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11357fd4d293e18f0800000000000000
-      internalID: -567953636257737967
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: map_sky_segment
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 6377
-        width: 1920
-        height: 1623
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3db24977b6e5b6360800000000000000
-      internalID: 7163923447923616723
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: map_ocean_segment
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 6372
-        width: 1920
-        height: 390
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c660746741ce4d730800000000000000
-      internalID: 4023099939776562796
+      spriteID: 9c1cde773ad8d2800800000000000000
+      internalID: 589282859486659017
       vertices: []
       indices: 
       edges: []

@@ -109,14 +109,16 @@ public class InventoryItem
     private string name; public string Name { get { return name; } }
     private float currencyValue; public float CurrencyValue { get { return currencyValue; } }
     private int maxStack; public int MaxStack { get { return maxStack; } }
+    private float weight; public float Weight { get { return weight; } }
     private string spriteID; public string SpriteID { get { return spriteID; } }
 
-    public InventoryItem(string _ID, string _Name, float _CurrencyValue, int _MaxStack, string _SpriteID)
+    public InventoryItem(string _ID, string _Name, float _CurrencyValue, int _MaxStack, float _Weight, string _SpriteID)
     {
         id = _ID;
         name = _Name;
         currencyValue = _CurrencyValue;
         maxStack = _MaxStack;
+        weight = _Weight;
         spriteID = _SpriteID;
     }
 }

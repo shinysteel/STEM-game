@@ -15,7 +15,7 @@ public class Fish : CreatureBase
     private float wanderTendency; public float WanderTendency { get { return wanderTendency; } }
     private float senseRange; public float SenseRange { get { return senseRange; } }
     private float startleTime; public float StartleTime { get { return startleTime; } }
-    public Fish(string _SpriteID, float _SwimForce, float _IdleTime, float _WanderTendency, float _SenseRange, float _StartleTime, string _Name, string _Description, string _ResearchItemID, GameObject _GO, int _InstanceID, string _ReferenceID) : base (_Name, _Description, _ResearchItemID, _GO, _InstanceID, _ReferenceID)
+    public Fish(string _SpriteID, float _SwimForce, float _IdleTime, float _WanderTendency, float _SenseRange, float _StartleTime, string _Name, string _Description, string _ResearchItemID, Sprite _DisplaySprite, GameObject _GO, int _InstanceID, string _ReferenceID) : base (_Name, _Description, _ResearchItemID, _DisplaySprite, _GO, _InstanceID, _ReferenceID)
     {
         spriteID = _SpriteID;
         swimForce = _SwimForce;
@@ -26,11 +26,11 @@ public class Fish : CreatureBase
     }
     public override object DeepClone(float x, float y)
     {
-        Fish fish = new Fish(spriteID, swimForce, idleTime, wanderTendency, senseRange, startleTime, Name, Description, ResearchItemID, GC.CreatePrefab("prefab:fish", x, y), GC.GetNewInstanceID(), ReferenceID);
+        Fish fish = new Fish(spriteID, swimForce, idleTime, wanderTendency, senseRange, startleTime, Name, Description, ResearchItemID, DisplaySprite, GC.CreatePrefab("prefab:fish", x, y), GC.GetNewInstanceID(), ReferenceID);
         GC.InitBehaviour<FishBehaviour>(fish.GO, fish);
         return fish;
     }
-
+    
     protected float velocityX;
     protected float velocityY;
     public bool isIdle = true;
@@ -56,6 +56,7 @@ public class Fish : CreatureBase
     public void Update()
     {
         rb.gravityScale = GO.transform.position.y > Player.TOP_OF_MAP ? 1f : 0f;
+        sr.flipX = velocityX >= 0f ? true : false;
     }
 
     public void Interrupt()
@@ -83,9 +84,9 @@ public class Fish : CreatureBase
     {
         isIdle = false;
         currentFUpdaterName = $"{InstanceID} Updater";
+        pos = new Vector3(pos.x, Mathf.Clamp(pos.y, -Mathf.Infinity, Player.TOP_OF_MAP - 3f));
         targetPos = pos;
         float timer = 0f;
-        sr.flipX = targetPos.x > GO.transform.position.x;
         FunctionUpdater.Create(() =>
         {
             timer += Time.deltaTime;
@@ -105,4 +106,35 @@ public class Fish : CreatureBase
             }
         }, currentFUpdaterName);
     }
+    public virtual void React(Action onFinished)
+    {
+        GC.PlaySound("sound:fish_dart1", 0.7f, 1f);
+        Vector3 dirAwayFromPlayer = (GO.transform.position - GC.PlayerT.position).normalized;
+        Vector3 targetPos = GO.transform.position + dirAwayFromPlayer;
+        MoveTo(targetPos, 0.05f, onFinished, 0.1f, 2.5f);
+    }
+
+    /*
+    public void Flock()
+    {
+        velocityX = swimForce * 0.5f;
+        for (int i = 0; i < GC.InstanceParent.transform.childCount; i++)
+        {
+            FishBehaviour fb = GC.InstanceParent.transform.GetChild(i).GetComponent<FishBehaviour>();
+            if (fb == null) continue;
+            Vector3 v2f = fb.transform.position - GO.transform.position;
+            Vector3 fv = velocityX >= 0f ? new Vector3(1f, 0f) : new Vector3(-1f, 0f);
+            float angle = Vector2.Angle(v2f, fv);
+            if (v2f.magnitude <= senseRange && angle <= 135f)
+            {
+                Debug.Log(v2f.magnitude);
+                Debug.DrawLine(GO.transform.position, GO.transform.position + v2f, Color.red);
+                // avoid nearby boids
+                float dist = v2f.magnitude;
+                float steerFactor = -4f * Mathf.Pow(Mathf.Clamp(dist, 0f, 0.5f), 2f) + 1;
+                GO.transform.eulerAngles = new Vector3(GO.transform.eulerAngles.x, GO.transform.eulerAngles.y, GO.transform.eulerAngles.z + 1f * steerFactor);
+            }
+        }
+    }
+    */
 }

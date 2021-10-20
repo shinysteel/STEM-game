@@ -82,7 +82,7 @@ public class PlayerScanner : MonoBehaviour
                 if (dist < smallestDist) { smallestDist = dist; closestInstanceID = id; }
             }
             targetInstanceID = closestInstanceID;
-            scannedCreatureT = GC.GetInstanceByID(targetInstanceID).transform;
+            if (targetInstanceID != -1) scannedCreatureT = GC.GetInstanceByID(targetInstanceID).transform;
         }
         else
         {

@@ -14,7 +14,8 @@ public class Player : MonoBehaviour
 
     public const float TOP_OF_MAP = -8.5f;
     public const float PITCH_BLACK_DEPTH = -190f;
-    public const float LUNG_CAPACITY = 35f;
+    public const float LUNG_CAPACITY = 500f;
+    public const float HUMAN_WEIGHT = 59.3f;
 
     [Header("Dive Data")]
     public float time;
@@ -25,13 +26,13 @@ public class Player : MonoBehaviour
     public float balance;
     public float oxygen;
     [Header("Other Data")]
-    [SerializeField] private float bcInflation;
+    [SerializeField] private float bcInflation = 0f;
     public float BCInflation
     {
         get { return bcInflation; }
-        set { bcInflation = Mathf.Clamp(value, -BC_INFLATION_BOUND, BC_INFLATION_BOUND); }
+        set { bcInflation = Mathf.Clamp(value, 0f, BC_INFLATION_MAX); }
     }
-    public const float BC_INFLATION_BOUND = 5f;
+    public const float BC_INFLATION_MAX = 2.5f;
 
     public IPlayerMoveable playerMovement;
     [SerializeField] private bool paused;
@@ -39,6 +40,10 @@ public class Player : MonoBehaviour
     public PlayerScanner playerScanner;
     public PlayerAnimator playerAnimator;
     private Vector3 spawnPos;
+
+    private Conversation convTutorialIntro;
+    private Conversation convTutorialDiving;
+
     private void Awake()
     {
         playerUI = GetComponent<PlayerUI>(); playerUI.player = this;
@@ -54,15 +59,54 @@ public class Player : MonoBehaviour
         paused = GC.paused;
         GC.OnPause += Player_UpdatePauseState;
         spawnPos = transform.position;
+
+        convTutorialIntro = new Conversation(new string[]
+            {
+                "Captain Kai Dennick",
+                "You",
+                "Captain Kai Dennick",
+                "Captain Kai Dennick"
+            }, new Sprite[]
+            {
+                GC.GetReference<Sprite>("sprite:captain_kai_dennick_portrait_neutral"),
+                null,
+                GC.GetReference<Sprite>("sprite:captain_kai_dennick_portrait_neutral"),
+                GC.GetReference<Sprite>("sprite:captain_kai_dennick_portrait_neutral")
+            }, new string[]
+            {
+                "Hold up there buddy. What's a kid like you doing here?",
+                "...",
+                "OH! You must be the work experience kid. i see you're all suited up and looking sharp as a marlin.",
+                "Alright, well hop right in the pond and show me what you got."
+            });
+        convTutorialDiving = new Conversation(new string[]
+            {
+                "Captain Kai Dennick",
+                "Captain Kai Dennick",
+            }, new Sprite[]
+            {
+                GC.GetReference<Sprite>("sprite:captain_kai_dennick_portrait_neutral"),
+                GC.GetReference<Sprite>("sprite:captain_kai_dennick_portrait_neutral"),
+            }, new string[]
+            {
+                "HEY! Where are your ballast weights? It's diving 101 increase your weight to break surface buoyancy.",
+                "I'll let this one slide since its your first day. Lucky for you I have four bad boys right here.",
+            });
+
     }
 
     private void LateUpdate()
     {
-        Camera.main.transform.position = new Vector3(Mathf.Clamp(transform.position.x, -14.45f, 35.5f), transform.position.y, CAMERA_Z_DISTANCE);
+        Camera.main.transform.position = new Vector3(Mathf.Clamp(transform.position.x, -80.7f, 35.5f), transform.position.y, CAMERA_Z_DISTANCE);
     }
     private void Update()
     {
         if (!DoUpdate()) return;
+        if (Input.GetKeyDown("m"))
+        {
+            GC.DialogueEvent(convTutorialDiving);
+        }
+
         if (oxygen <= 0f)
         {
             transform.position = spawnPos;
@@ -80,14 +124,13 @@ public class Player : MonoBehaviour
 
         // time
         depth = Mathf.Abs(Mathf.Clamp(Mathf.RoundToInt((transform.position.y - TOP_OF_MAP) * 0.5f), -999, 0));
-        // weight
+        weight = playerUI.GetPlayerWeight();
         // temperature
         darkness = (transform.position.y - TOP_OF_MAP) / (PITCH_BLACK_DEPTH - TOP_OF_MAP);
-        // balance
 
         // time
         playerUI.SetDepth(depth);
-        // weight
+        playerUI.SetWeight(weight);
         // temperature
         playerUI.SetDarkness(darkness);
         playerUI.SetBalance(balance);

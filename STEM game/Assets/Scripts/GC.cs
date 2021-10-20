@@ -7,14 +7,18 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor;
+using TMPro;
+using Random = UnityEngine.Random;
 
 public class GC : MonoBehaviour
 {
     private static Hashtable referenceHash;
     private static Hashtable instanceHash;
-    private static Transform instanceParent;
+    private static Transform instanceParent; public static Transform InstanceParent { get { return instanceParent; } }
     private static int instanceIDCounter = 0;
     public static Transform CanvasT; public Transform _CanvasT;
+    public static Canvas CanvasC;
+    public static CanvasScaler CanvasS;
     public static Transform PlayerT; public Transform _PlayerT;
     public static event EventHandler OnPause;
     public static bool paused = true;
@@ -22,12 +26,17 @@ public class GC : MonoBehaviour
     [SerializeField] private GameObject pauseScreenGO;
     [SerializeField] private GameObject gameplayInterfaceGO;
     [SerializeField] private GameObject inventoryScreenGO;
+    [SerializeField] private GameObject codexScreenGO;
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider audioSlider;
     private static float musicVolume = 0.5f;
     private static float audioVolume = 0.5f;
     [SerializeField] private AudioSource bgmAudioSource;
     [SerializeField] private static float audioMultiplier = 0.5f;
+    public static GameObject DEMain; public GameObject _DEMain;
+    public static TextMeshProUGUI DESpeakerText; public TextMeshProUGUI _DESpeakerText;
+    public static Image DEPortrait; public Image _DEPortrait;
+    public static TextMeshProUGUI DEDialogueText; public TextMeshProUGUI _DEDialogueText;
 
     private void Awake()
     {
@@ -48,6 +57,7 @@ public class GC : MonoBehaviour
         referenceHash.Add("sound:bubble1", Resources.Load<AudioClip>("Sounds/bubble1"));
         referenceHash.Add("sound:buoyancy_adjust1", Resources.Load<AudioClip>("Sounds/buoyancy_adjust1"));
         referenceHash.Add("sound:fish_dart1", Resources.Load<AudioClip>("Sounds/fish_dart1"));
+        referenceHash.Add("sound:creature_scream1", Resources.Load<AudioClip>("Sounds/creature_scream1"));
         referenceHash.Add("sprite:builtin:background", null);
         referenceHash.Add("sprite:builtin:knob", null);
         referenceHash.Add("font:arial", Resources.GetBuiltinResource<Font>("Arial.ttf"));
@@ -59,7 +69,7 @@ public class GC : MonoBehaviour
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/items1"), "sprite:coral_research_paper", 
             "sprite:crab_research_paper", "sprite:fish_research_paper", "sprite:squid_research_paper");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/species1"), "sprite:blue_fish",
-            "sprite:crab_attack", "sprite:crab_idle", "sprite:giant_squid_swim1",
+            "sprite:old_crab_attack", "sprite:old_crab_idle", "sprite:giant_squid_swim1",
             "sprite:giant_squid_swim2", "sprite:orange_coral_idle1", "sprite:orange_coral_idle2",
             "sprite:purple_fish", "sprite:yellow_coral_idle1", "sprite:yellow_coral_idle2");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/icons1"), "sprite:dollar_icon", "sprite:gear_icon");
@@ -71,35 +81,51 @@ public class GC : MonoBehaviour
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/squid2"), "sprite:squid_bend");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/bluefish1"), "sprite:bluefish");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/atlantic_croaker1"), "sprite:atlantic_croaker");
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/species2"), "sprite:crab_idle", "sprite:crab_prepare", "sprite:hammerhead_shark_angry", "sprite:hammerhead_shark_idle");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/scanned_icon1"), "sprite:scanned_icon");
         AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/emotions1"), "sprite:alert_icon");
-        AddItemToReferenceHash("item:fish_research_paper", "Fish Research Paper", 2f, 3, "sprite:fish_research_paper");
-        AddItemToReferenceHash("item:coral_research_paper", "Coral Research Paper", 4.5f, 2, "sprite:coral_research_paper");
-        AddItemToReferenceHash("item:squid_research_paper", "Squid Research Paper", 50f, 1, "sprite:squid_research_paper");
-        referenceHash.Add("creature:squid", new Fish("sprite:squid_idle", 0.08f, 0.5f, 7f, 4f, 0.2f, "Giant Squid", "OMG! It's a Giant Squid!", "item:squid_research_paper", null, -1, "creature:squid"));
-        referenceHash.Add("creature:widemouth_bass", new Fish("sprite:widemouth_bass", 0.05f, 2f, 4f, 2.7f, 0.3f, "Widemouth Bass", null, "item:fish_research_paper", null, -1, "creature:widemouth_bass"));
-        referenceHash.Add("creature:snapper", new Fish("sprite:snapper", 0.05f, 1.5f, 3f, 3f, 0.3f, "Snapper", null, "item:fish_research_paper", null, -1, "creature:snapper"));
-        referenceHash.Add("creature:bluefish", new Fish("sprite:bluefish", 0.05f, 1.5f, 2.5f, 2.75f, 0.4f, "Bluefish", null, "item:fish_research_paper", null, -1, "creature:bluefish"));
-        referenceHash.Add("creature:atlantic_croaker", new Fish("sprite:atlantic_croaker", 0.04f, 3f, 0.5f, 2.75f, 0.35f, "Atlantic Croaker", null, "item:fish_research_paper", null, -1, "creature:atlantic_croaker"));
-        referenceHash.Add("creature:western_blue_groper", new Fish("sprite:western_blue_groper", 0.05f, 1.2f, 4f, 3.4f, 0.25f, "Western Blue Groper", null, "item:fish_research_paper", null, -1, "creature:western_blue_groper"));
-        referenceHash.Add("creature:orange_coral", new Coral(new string[] { "sprite:orange_coral_idle1", "sprite:orange_coral_idle2" }, "Orange Coral", null, "item:coral_research_paper", null, -1, "creature:orange_coral"));
-        referenceHash.Add("creature:yellow_coral", new Coral(new string[] { "sprite:yellow_coral_idle1", "sprite:yellow_coral_idle2" }, "Yellow Coral", null, "item:coral_research_paper", null, -1, "creature:yelow_coral"));
-        referenceHash.Add("creature:orange_cup_coral", new Coral(new string[] { "sprite:orange_cup_coral", "sprite:orange_cup_coral" }, "Orange Cup Coral", null, "item:coral_research_paper", null, -1, "creature:orange_cup_coral"));
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/captain_kai_dennick_portrait1"), "sprite:captain_kai_dennick_portrait_neutral");
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/dr_chelsea_reeding_portrait1"), "sprite:dr_chelsea_reeding_portrait_neutral");
+        AddSpriteSheetToReferenceHash(Resources.LoadAll<Sprite>("Sprites/professor_christopher_tazien_portrait1"), "sprite:professor_christopher_tazien_portrait_neutral");
+        AddItemToReferenceHash("item:fish_research_paper", "Fish Research Paper", 2f, 3, 0.1f, "sprite:fish_research_paper");
+        AddItemToReferenceHash("item:shark_research_paper", "Shark Research Paper", 75f, 2, 0.1f, "sprite:fish_research_paper");
+        AddItemToReferenceHash("item:coral_research_paper", "Coral Research Paper", 4.5f, 2, 0.1f, "sprite:coral_research_paper");
+        AddItemToReferenceHash("item:squid_research_paper", "Squid Research Paper", 50f, 1, 0.1f, "sprite:squid_research_paper");
+        AddItemToReferenceHash("item:small_ballast_weight", "Small Ballast Weight", 5f, 6, 2.5f, "sprite:alert_icon");
+        referenceHash.Add("creature:squid", new Fish("sprite:squid_idle", 0.08f, 0.5f, 7f, 4f, 0.2f, "Giant Squid", "OMG! It's a Giant Squid!", "item:squid_research_paper", GetReference<Sprite>("sprite:squid_idle"), null, -1, "creature:squid"));
+        referenceHash.Add("creature:widemouth_bass", new Fish("sprite:widemouth_bass", 0.05f, 2f, 4f, 2.7f, 0.3f, "Widemouth Bass", null, "item:fish_research_paper", GetReference<Sprite>("sprite:widemouth_bass"), null, -1, "creature:widemouth_bass"));
+        referenceHash.Add("creature:snapper", new Fish("sprite:snapper", 0.05f, 1.5f, 3f, 3f, 0.3f, "Snapper", null, "item:fish_research_paper", GetReference<Sprite>("sprite:snapper"), null, -1, "creature:snapper"));
+        referenceHash.Add("creature:bluefish", new Fish("sprite:bluefish", 0.05f, 1.5f, 2.5f, 2.75f, 0.4f, "Bluefish", null, "item:fish_research_paper", GetReference<Sprite>("sprite:bluefish"), null, -1, "creature:bluefish"));
+        referenceHash.Add("creature:atlantic_croaker", new Fish("sprite:atlantic_croaker", 0.04f, 3f, 0.5f, 2.75f, 0.35f, "Atlantic Croaker", null, "item:fish_research_paper", GetReference<Sprite>("sprite:atlantic_croaker"), null, -1, "creature:atlantic_croaker"));
+        referenceHash.Add("creature:western_blue_groper", new Fish("sprite:western_blue_groper", 0.05f, 1.2f, 4f, 3.4f, 0.25f, "Western Blue Groper", null, "item:fish_research_paper", GetReference<Sprite>("sprite:western_blue_groper"), null, -1, "creature:western_blue_groper"));
+        referenceHash.Add("creature:hammerhead_shark", new Shark("sprite:hammerhead_shark_idle", 0.05f, 0.2f, 3f, 5f, 0.3f, "Hammerhead Shark", null, "item:shark_research_paper", GetReference<Sprite>("sprite:hammerhead_shark_idle"), null, -1, "creature:hammerhead_shark"));
+        referenceHash.Add("creature:orange_coral", new Coral(new string[] { "sprite:orange_coral_idle1", "sprite:orange_coral_idle2" }, "Orange Coral", null, "item:coral_research_paper", GetReference<Sprite>("sprite:orange_coral_idle1"), null, -1, "creature:orange_coral"));
+        referenceHash.Add("creature:yellow_coral", new Coral(new string[] { "sprite:yellow_coral_idle1", "sprite:yellow_coral_idle2" }, "Yellow Coral", null, "item:coral_research_paper", GetReference<Sprite>("sprite:yellow_coral_idle1"), null, -1, "creature:yellow_coral"));
+        referenceHash.Add("creature:orange_cup_coral", new Coral(new string[] { "sprite:orange_cup_coral", "sprite:orange_cup_coral" }, "Orange Cup Coral", null, "item:coral_research_paper", GetReference<Sprite>("sprite:orange_cup_coral"), null, -1, "creature:orange_cup_coral"));
 
         instanceHash = new Hashtable();
         instanceParent = new GameObject("Instances").transform;
 
         CanvasT = _CanvasT;
+        CanvasC = CanvasT.GetComponent<Canvas>();
+        CanvasS = CanvasT.GetComponent<CanvasScaler>();
         PlayerT = _PlayerT;
+        DEMain = _DEMain;
+        DESpeakerText = _DESpeakerText;
+        DEPortrait = _DEPortrait;
+        DEDialogueText = _DEDialogueText;
 
         for (int i = 0; i < 5; i++)
         {
-            CreateInstance("creature:widemouth_bass", -10f, -15f);
-            CreateInstance("creature:snapper", -10f, -15f);
-            CreateInstance("creature:bluefish", -10f, -15f);
-            CreateInstance("creature:atlantic_croaker", -10f, -15f);
-            CreateInstance("creature:western_blue_groper", -10f, -15f);
+            float randX = Random.Range(-2.5f, -7.5f);
+            float randY = Random.Range(-15f, -25f);
+            CreateInstance("creature:widemouth_bass", randX, randY);
+            CreateInstance("creature:snapper", randX, randY);
+            CreateInstance("creature:bluefish", randX, randY);
+            CreateInstance("creature:atlantic_croaker", randX, randY);
+            CreateInstance("creature:western_blue_groper", randX, randY);
         }
+        //CreateInstance("creature:hammerhead_shark", 17f, -22f);
         CreateInstance("creature:squid", -3f, -27f);
         CreateInstance("creature:orange_coral", -12f, -25.75f);
         CreateInstance("creature:yellow_coral", -14.6f, -25.9f);
@@ -152,9 +178,9 @@ public class GC : MonoBehaviour
     {
         go.GetComponent<T>().SetClass(classReference);
     }
-    private static void AddItemToReferenceHash(string key, string name, float currencyValue, int maxStack, string spriteID)
+    private static void AddItemToReferenceHash(string key, string name, float currencyValue, int maxStack, float weight, string spriteID)
     {
-        referenceHash.Add(key, new InventoryItem(key, name, currencyValue, maxStack, spriteID));
+        referenceHash.Add(key, new InventoryItem(key, name, currencyValue, maxStack, weight, spriteID));
     }
     private static void AddSpriteSheetToReferenceHash(Sprite[] spriteSheet, params string[] keys)
     {
@@ -241,6 +267,72 @@ public class GC : MonoBehaviour
         popup.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = GetReference<Sprite>(spriteID);
         Destroy(popup, 3f);
     }
+    public static float RoundUpNearestTen(float num)
+    {
+        int rem = Mathf.RoundToInt(num) % 10;
+        return num - rem + 10;
+    }
+    public static int RoundUpNearestTen(int num)
+    {
+        return (int)RoundUpNearestTen((float)num);
+    }
+    public static float GetUIScale()
+    {
+        return Mathf.Pow(CanvasC.pixelRect.width / CanvasS.referenceResolution.x, 1f - CanvasS.matchWidthOrHeight) *
+               Mathf.Pow(CanvasC.pixelRect.height / CanvasS.referenceResolution.y, CanvasS.matchWidthOrHeight);
+    }
+    public static void DialogueEvent(Conversation conversation)
+    {
+        bool isDirty = true;
+        int convIndex = 0;
+        string targetDialogue = "";
+        int dialIndex = 0;
+        float punctuationDelay = 0.1f;
+        float letterDelay = 0.04f;
+        float letterTimer = 0f;
+        FunctionUpdater.Create(() =>
+        {
+            // Test if text / image objects need value update.
+            if (isDirty)
+            {
+                GC.DESpeakerText.text = conversation.Speakers[convIndex];
+                GC.DEPortrait.sprite = conversation.Portraits[convIndex];
+                GC.DEDialogueText.text = "";
+                targetDialogue = conversation.Dialogue[convIndex];
+                dialIndex = 0;
+                letterTimer = 0f;
+                DEMain.SetActive(true);
+                isDirty = false;
+            }
+            // Slowly build dialogue text.
+            if (GC.DEDialogueText.text != targetDialogue)
+            {
+                letterTimer += Time.deltaTime;
+                if (letterTimer >= letterDelay)
+                {
+                    char nextChar = targetDialogue[dialIndex];
+
+                    GC.DEDialogueText.text = targetDialogue.Substring(0, dialIndex++);
+                    letterTimer -= letterDelay;
+                }
+            }
+            // Detecting conversation continue.
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                convIndex++;
+                if (convIndex == conversation.Length)
+                {
+                    DEMain.SetActive(false);
+                    GC.DESpeakerText.text = "";
+                    GC.DEPortrait.sprite = null;
+                    GC.DEDialogueText.text = "";
+                    return true;
+                }
+                isDirty = true;
+            }
+            return false;
+        });
+    }
 
     public void RestartGame()
     {
@@ -252,6 +344,8 @@ public class GC : MonoBehaviour
         pauseScreenGO.SetActive(false);
         gameplayInterfaceGO.SetActive(false);
         inventoryScreenGO.SetActive(false);
+        codexScreenGO.SetActive(false);
+        DEMain.SetActive(false);
     }
     public void StartGame()
     {
@@ -280,6 +374,10 @@ public class GC : MonoBehaviour
     {
         inventoryScreenGO.SetActive(!inventoryScreenGO.activeSelf);
     }
+    public void UpdateCodexState()
+    {
+        codexScreenGO.SetActive(!codexScreenGO.activeSelf);
+    }
     
     public void OnMusicSliderChange()
     {
@@ -288,5 +386,19 @@ public class GC : MonoBehaviour
     public void OnAudioSliderChange()
     {
         GC.audioMultiplier = audioSlider.value;
+    }
+}
+
+public class Conversation {
+    private string[] speakers; public string[] Speakers { get { return speakers; } }
+    private Sprite[] portraits; public Sprite[] Portraits { get { return portraits; } }
+    private string[] dialogue; public string[] Dialogue { get { return dialogue; } }
+    public int Length { get { return speakers.Length; } }
+
+    public Conversation(string[] _Speakers, Sprite[] _Portraits, string[] _Dialogue)
+    {
+        speakers = _Speakers;
+        portraits = _Portraits;
+        dialogue = _Dialogue;
     }
 }

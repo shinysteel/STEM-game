@@ -18,6 +18,11 @@ public class PlayerUI : MonoBehaviour
     public TextMeshProUGUI analysisTitle; public TextMeshProUGUI analysisDescription; public Image analysisDisplay;
     public Animator analysisAC;
     public Transform playerInventoryT;
+    public RectTransform codexEntriesMainOffsetT;
+    public Slider codexEntriesSlider;
+    public float codexSliderAmplifier; // offset amplifier scaling to amount of species.
+    public TextMeshProUGUI codexSpeciesNameText;
+    public TextMeshProUGUI codexSpeciesDescriptionText;
     public Transform hotbarReference;
     public GameObject fillBarPrefab;
     private static int hotbarBarCount = 0;
@@ -52,10 +57,37 @@ public class PlayerUI : MonoBehaviour
 
         int inventoryWidth = 3; int inventoryHeight = 2;
         playerInventory = new Inventory(inventoryWidth * inventoryHeight);
-        playerInventoryDisplay = new InventoryDisplay(inventoryWidth, inventoryHeight, 30f, 45f, new Vector3(0f, 0f));
+
+        playerInventoryDisplay = new InventoryDisplay(inventoryWidth, inventoryHeight, 30f, 15f, new Vector3(0f, 0f));
         playerInventoryDisplay.Main.transform.SetParent(playerInventoryT);
         playerInventoryDisplay.Main.transform.localPosition = new Vector3(0f, 15f);
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
+
+        string[] entryIDs = new string[] { "creature:squid", "creature:widemouth_bass", "creature:snapper", "creature:bluefish",
+        "creature:atlantic_croaker", "creature:western_blue_groper", "creature:hammerhead_shark", "creature:orange_coral",
+        "creature:yellow_coral", "creature:orange_cup_coral" };
+        for (int i = 0; i < entryIDs.Length; i++)
+        {
+            //RectTransform entry = new GameObject(entryIDs[i]).AddComponent<RectTransform>();
+            CreatureBase creature = GC.GetReference<CreatureBase>(entryIDs[i]);
+            Vector2 start = new Vector2(-210f, 0f);
+            Vector2 displacement = new Vector2(95f * i, 0f);
+            Image entry = GC.BuildUIImage(entryIDs[i], codexEntriesMainOffsetT, start + displacement, new Vector2(75f, 75f), "sprite:builtin:background", Color.white);
+            entry.sprite = creature.DisplaySprite;
+            Button button = entry.gameObject.AddComponent<Button>();
+            button.onClick.AddListener(() => 
+            {
+                CreatureBase species = GC.GetReference<CreatureBase>(creature.ReferenceID);
+                codexSpeciesNameText.text = species.Name;
+                codexSpeciesDescriptionText.text = species.Description;
+            });     
+            //entry.rectTransform.localPosition *= GC.GetUIScale();
+        }
+        codexSliderAmplifier = 435f;
+        codexSpeciesNameText.text = "";
+        codexSpeciesDescriptionText.text = "";
+
+        ObtainItems(GC.GetReference<InventoryItem>("item:small_ballast_weight"), 12);
 
         darknessOverlay = GC.BuildUIImage("Darkness Overlay", null, Vector2.zero, new Vector2(1500f, 1500f), "sprite:builtin:background", new Color(0f, 0f, 0f, 1f), isCutout: true);
         darknessOverlay.transform.SetParent(torchLight.transform);
@@ -65,6 +97,9 @@ public class PlayerUI : MonoBehaviour
 
     private void Update()
     {
+        // Update pos of creature icons slider main go
+        codexEntriesMainOffsetT.transform.localPosition = new Vector2(0f - codexEntriesSlider.value * codexSliderAmplifier, 0f);
+
         if (!player.DoUpdate()) return;
         Vector2 dir = new Vector2(Input.mousePosition.x - Screen.width * 0.5f, Input.mousePosition.y - Screen.height * 0.5f);
         lightPointer.transform.rotation = Quaternion.LookRotation(Vector3.forward, dir);
@@ -81,7 +116,7 @@ public class PlayerUI : MonoBehaviour
                     pitchChange -= 0.05f;
                 }
             }
-            player.BCInflation -= 3f * Time.deltaTime;
+            player.BCInflation -= 2f * Time.deltaTime;
         }
         else if (Input.GetKey("3"))
         {
@@ -94,11 +129,12 @@ public class PlayerUI : MonoBehaviour
                     pitchChange += 0.05f;
                 }
             }
-            player.BCInflation += 3f * Time.deltaTime;
+            player.BCInflation += 2f * Time.deltaTime;
         }
     }
 
     public void SetDarkness(float newOpacity) { darknessOverlay.color = new Color(darknessOverlay.color.r, darknessOverlay.color.g, darknessOverlay.color.b, newOpacity); }
+    public void SetWeight(float newWeight) { weightText.text = $"{newWeight}kg"; }
     public void SetDepth(int newDepth) { depthText.text = $"{newDepth}m"; }
     public void SetAnalysis(string title, string description, Sprite sprite)
     {
@@ -115,6 +151,7 @@ public class PlayerUI : MonoBehaviour
         fillBar.transform.localPosition += new Vector3(0f, HOTBAR_Y_SPACING * hotbarBarCount);
         hotbarBarCount++;
         Transform origin = fillBar.transform.GetChild(1);
+        origin.transform.localScale = new Vector3(Mathf.Clamp(getValue(), 0f, 1f), 1f);
         origin.GetChild(0).GetComponent<Image>().color = fillColor;
         TextMeshProUGUI textUI = fillBar.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
         textUI.text = textValue;
@@ -122,8 +159,8 @@ public class PlayerUI : MonoBehaviour
         {
             if (killCondition() == true)
             {
-                Destroy(fillBar);
                 hotbarBarCount--;
+                Destroy(fillBar);
                 return true;
             }
             else
@@ -191,18 +228,29 @@ public class PlayerUI : MonoBehaviour
         player.AddBalance(totalCurrencyGain);
         UpdateInventoryDisplay(playerInventory, playerInventoryDisplay);
     }
+    public float GetPlayerWeight()
+    {
+        float weight = Player.HUMAN_WEIGHT;
+        for (int i = 0; i < playerInventory.GetSize(); i++)
+        {
+            InventorySlot slot = playerInventory.GetSlot(i);
+            InventoryItem item = playerInventory.GetSlot(i).Item;
+            if (item != null) weight += playerInventory.GetSlot(i).Item.Weight * slot.Quantity;
+        }
+        return Mathf.Round(weight * 10.0f) * 0.1f;
+    }
 
     public class InventoryDisplay
     {
-        private Transform main; public Transform Main { get { return main; } }
+        private RectTransform main; public RectTransform Main { get { return main; } }
         private int width; public int Width { get { return width; } }
         private int height; public int Height { get { return height; } }
         private SlotVisual[,] slots;
         public InventoryDisplay(int _Width, int _Height, float _SlotSize, float _SlotSpacing, Vector3 _Pos)
         {
-            main = new GameObject("Inventory Display").transform;
+            main = new GameObject("Inventory Display").AddComponent<RectTransform>();
             main.SetParent(GC.CanvasT);
-            main.transform.localPosition = _Pos;
+            main.anchorMin = new Vector2(0.5f, 1f); main.anchorMax = new Vector2(0.5f, 1f);
             width = _Width; height = _Height;
             slots = new SlotVisual[_Width, _Height];
             for (int y = 0; y < _Height; y++)
@@ -227,16 +275,17 @@ public class PlayerUI : MonoBehaviour
     }
     public class SlotVisual
     {
-        private Transform main; public Transform Main { get { return main; } }
+        private RectTransform main; public RectTransform Main { get { return main; } }
         private Image image; public Image Image { get { return image; } }
         private Text name; public Text Name { get { return name; } }
         private Text quantity; public Text Quantity { get { return quantity; } }
 
         public SlotVisual(Vector2 _Pos, Image _Image, Text _Name, Text _Quantity, Image _Backdrop, Transform _Main)
         {
-            main = new GameObject("Slot Visual").AddComponent<RectTransform>().transform;
+            main = new GameObject("Slot Visual").AddComponent<RectTransform>();
             main.transform.SetParent(_Main);
-            main.transform.localPosition = _Pos;
+            main.anchorMin = new Vector2(0.5f, 1f); main.anchorMax = new Vector2(0.5f, 1f);
+            main.transform.localPosition = new Vector2(_Pos.x, _Pos.y) * GC.GetUIScale(); ;
             _Backdrop.transform.SetParent(main); _Backdrop.transform.localPosition = Vector2.zero;
             image = _Image; image.transform.SetParent(main); image.transform.localPosition = new Vector2(0f, 0f);
             name = _Name; name.transform.SetParent(main); name.transform.localPosition = new Vector2(0f, 0f);
